@@ -7,5 +7,5 @@ A generic pipeline that can be run routinely on all Illumina sequence runs, rega
 ## Usage
 
 ```
-nextflow run BCCDC-PHL/routine-sequence-qc --run_dir <your illumina run directory> --outdir <output directory>
+nextflow run BCCDC-PHL/routine-sequence-qc-nf --run_dir <your illumina run directory> --outdir <output directory>
 ```

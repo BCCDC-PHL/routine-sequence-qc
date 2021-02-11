@@ -15,7 +15,7 @@ process fastqc {
       tuple val(grouping_key), path(reads)
 
     output:
-      tuple val(sample_id), path("${sample_id}_*_R1_*_fastqc"), path("${sample_id}_*_R2_*_fastqc")
+      tuple val(sample_id), path("${sample_id}_R1_fastqc"), path("${sample_id}_R2_fastqc")
 
     script:
       if (grouping_key =~ '_S[0-9]+_') {
@@ -28,5 +28,7 @@ process fastqc {
       """
       fastqc -t 2 ${reads}
       for d in *.zip; do unzip \$d; done
+      mv ${sample_id}_*_R1_*_fastqc ${sample_id}_R1_fastqc
+      mv ${sample_id}_*_R2_*_fastqc ${sample_id}_R2_fastqc
       """
 }

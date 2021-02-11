@@ -22,6 +22,6 @@ process interop_summary {
     script:
       """
       interop_summary ${run_dir} > interop_summary.txt
-      parse_run_summary.py --summary interop_summary.txt > interop_summary.json
+      parse_run_summary.py --summary interop_summary.txt | python -m json.tool > interop_summary.json
       """
 }

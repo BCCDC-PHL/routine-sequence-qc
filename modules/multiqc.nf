@@ -1,8 +1,8 @@
 process multiqc {
     /**
     * 
-    * @input tuple val(sample_id), path(forward), path(reverse)
-    * @output 
+    * @input tuple val(run_id), [path(fastqc_outdir)]
+    * @output tuple path(multiqc_report), path(multiqc_data)
     */
 
     tag { run_id }
@@ -12,7 +12,7 @@ process multiqc {
     cpus 2
 
     input:
-      path("fastqc_outdir")
+      tuple val(run_id), path("fastqc_outdir")
 
     output:
       tuple path("multiqc_report.html"), path("multiqc_data")

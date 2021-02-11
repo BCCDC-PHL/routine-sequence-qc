@@ -7,3 +7,5 @@ dependencies:
   - python=3
   - fastqc=0.11.9
   - multiqc=1.9
+  - illumina-interop=1.1.21
+  - sample-sheet=0.12.0

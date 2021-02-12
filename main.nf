@@ -8,6 +8,7 @@ include { interop_summary } from './modules/interop.nf'
 include { parse_sample_sheet } from './modules/sample-sheet.nf'
 include { kraken2 } from './modules/kraken2.nf'
 include { estimate_abundance } from './modules/bracken.nf'
+include { abundance_top_n } from './modules/bracken.nf'
 
 workflow {
   ch_fastq = Channel.fromFilePairs( "${params.run_dir}/Data/Intensities/BaseCalls/*_{R1,R2}_*.fastq.gz" )
@@ -28,6 +29,7 @@ workflow {
     kraken2(ch_fastq.combine(ch_kraken2_db))
 
     estimate_abundance(kraken2.out.combine(ch_bracken_db).combine(ch_taxonomic_levels))
+    abundance_top_n(estimate_abundance.out)
 
     // Line below is just composing the run_id and the list of fastqc_outdirs into a new list. There must be a better way(?)
     // "run_id" + ["fastqc_outdir1", "fastqc_outdir2", ...] => ["run_id", ["fastqc_outdir1", "fastqc_outdir2"]]

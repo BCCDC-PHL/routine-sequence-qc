@@ -10,7 +10,7 @@ process kraken2 {
       tuple val(grouping_key), path(reads), path(kraken2_db)
 
     output:
-      file "${sample_id}_kraken2.txt"
+      tuple val(sample_id), path("${sample_id}_kraken2.txt")
 
     script:
     if (grouping_key =~ '_S[0-9]+_') {

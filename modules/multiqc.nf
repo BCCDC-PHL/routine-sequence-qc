@@ -7,7 +7,7 @@ process multiqc {
 
     tag { run_id }
 
-    publishDir "${params.outdir}/${task.process.replaceAll(":","_")}", pattern: "multiqc_*", mode: 'copy'
+    publishDir "${params.outdir}/${task.process.replaceAll(":","_")}", pattern: "${run_id}_multiqc_*", mode: 'copy'
 
     cpus 2
 
@@ -15,10 +15,10 @@ process multiqc {
       tuple val(run_id), path(qc_outdir)
 
     output:
-      tuple path("multiqc_report.html"), path("multiqc_data")
+      tuple path("${run_id}_multiqc_report.html"), path("${run_id}_multiqc_report_data")
 
     script:
       """
-      multiqc .
+      multiqc --title "${run_id}" .
       """
 }

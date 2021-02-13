@@ -32,12 +32,6 @@ def main(args):
         name_field = 'abundance_' + num + '_name'
         output_line[name_field] = bracken_report[n]['name']
         output_fields.append(name_field)
-        taxonomy_id_field = 'abundance_' + num + '_taxonomy_id'
-        output_line[taxonomy_id_field] = bracken_report[n]['taxonomy_id']
-        output_fields.append(taxonomy_id_field)
-        estimated_reads_field = 'abundance_' + num + '_estimated_reads'
-        output_line[estimated_reads_field] = bracken_report[n]['new_est_reads']
-        output_fields.append(estimated_reads_field)
         fraction_total_reads_field = 'abundance_' + num + '_fraction_total_reads'
         output_line[fraction_total_reads_field] = bracken_report[n]['fraction_total_reads']
         output_fields.append(fraction_total_reads_field)

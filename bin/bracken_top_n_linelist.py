@@ -19,25 +19,27 @@ def parse_bracken_report(bracken_report_path):
 
 def main(args):
     bracken_report = parse_bracken_report(args.bracken_report)
+
+    bracken_report_sorted = sorted(bracken_report, key=lambda k: k['fraction_total_reads'], reverse=True) 
     
-    # print(json.dumps(bracken_report))
     output_fields = ['sample_id', 'taxonomy_level']
     output_line = {
         'sample_id': args.sample_id,
-        'taxonomy_level': bracken_report[0]['taxonomy_lvl']
+        'taxonomy_level': bracken_report_sorted[0]['taxonomy_lvl']
     }
     
     for n in range(args.top_n):
         num = str(n + 1)
         name_field = 'abundance_' + num + '_name'
-        output_line[name_field] = bracken_report[n]['name']
+        output_line[name_field] = bracken_report_sorted[n]['name']
         output_fields.append(name_field)
         fraction_total_reads_field = 'abundance_' + num + '_fraction_total_reads'
-        output_line[fraction_total_reads_field] = bracken_report[n]['fraction_total_reads']
+        output_line[fraction_total_reads_field] = bracken_report_sorted[n]['fraction_total_reads']
         output_fields.append(fraction_total_reads_field)
         
 
-    writer = csv.DictWriter(sys.stdout, fieldnames=output_fields)
+    csv.register_dialect('unix-csv-quote-minimal', delimiter=',', doublequote=False, lineterminator='\n', quoting=csv.QUOTE_MINIMAL)
+    writer = csv.DictWriter(sys.stdout, fieldnames=output_fields, dialect='unix-csv-quote-minimal')
     writer.writeheader()
     writer.writerow(output_line)
         

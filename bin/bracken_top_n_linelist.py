@@ -31,10 +31,16 @@ def main(args):
     for n in range(args.top_n):
         num = str(n + 1)
         name_field = 'abundance_' + num + '_name'
-        output_line[name_field] = bracken_report_sorted[n]['name']
+        try:
+            output_line[name_field] = bracken_report_sorted[n]['name']
+        except IndexError as e:
+            output_line[name_field] = "None"
         output_fields.append(name_field)
         fraction_total_reads_field = 'abundance_' + num + '_fraction_total_reads'
-        output_line[fraction_total_reads_field] = bracken_report_sorted[n]['fraction_total_reads']
+        try:
+            output_line[fraction_total_reads_field] = bracken_report_sorted[n]['fraction_total_reads']
+        except IndexError as e:
+            output_line[fraction_total_reads_field] = 0.0
         output_fields.append(fraction_total_reads_field)
         
 

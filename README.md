@@ -17,3 +17,33 @@ of reads. Estimation of relative abundances of taxonomic groups (genus, species)
 ```
 nextflow run BCCDC-PHL/routine-sequence-qc-nf --run_dir <your illumina run directory> --outdir <output directory>
 ```
+
+## Outputs
+
+```
+<outdir>
+├── abundance_top_n
+│   ├── top_3_abundances_genus.csv
+│   └── top_5_abundances_species.csv
+├── bracken
+│   ├── <sample_id>_Genus_bracken_abundances.tsv
+│   ├── <sample_id>_Genus_bracken.txt
+│   ├── <sample_id>_Species_bracken_abundances.tsv
+│   ├── <sample_id>_Species_bracken.txt
+│   ├── ...
+├── fastqc
+│   ├── <sample_id>_R1_fastqc
+│   ├── <sample_id>_R2_fastqc
+│   ├── ...
+├── interop_summary
+│   ├── interop_index-summary.csv
+│   └── interop_summary.csv
+├── kraken2
+│   ├── <sample_id>_kraken2.txt
+│   ├── ...
+├── multiqc
+│   ├── multiqc_data
+│   └── multiqc_report.html
+└── parse_sample_sheet
+    └── sample_sheet.json
+```

@@ -9,7 +9,7 @@ process interop_summary {
 
     executor 'local'
 
-    publishDir "${params.outdir}/${task.process.replaceAll(":","_")}", pattern: "interop_summary.json", mode: 'copy'
+    publishDir "${params.outdir}/${task.process.replaceAll(":","_")}", pattern: "interop*.csv", mode: 'copy'
 
     cpus 1
 
@@ -17,11 +17,12 @@ process interop_summary {
       tuple val(run_id), path(run_dir)
 
     output:
-      tuple path("interop_summary.json")
+      tuple val(run_id), path("interop_summary.csv"), path("interop_index-summary.csv")
 
     script:
       """
-      interop_summary ${run_dir} > interop_summary.txt
-      parse_run_summary.py --summary interop_summary.txt | python -m json.tool > interop_summary.json
+      interop_summary ${run_dir} --csv=1 > interop_summary.csv
+      interop_index-summary ${run_dir} --csv=1 > interop_index-summary.csv
+      # parse_run_summary.py --summary interop_summary.txt | python -m json.tool > interop_summary.json
       """
 }

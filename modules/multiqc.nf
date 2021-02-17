@@ -12,13 +12,16 @@ process multiqc {
     cpus 2
 
     input:
-      tuple val(run_id), path(qc_outdir)
+      tuple path(multiqc_config), val(run_id), path(qc_outdir)
 
     output:
       tuple path("multiqc_report.html"), path("multiqc_data")
 
     script:
       """
+      cp ${multiqc_config} multiqc_config.yaml
+      echo "report_header_info:" >> multiqc_config.yaml
+      echo "  - Run ID: ${run_id}" >> multiqc_config.yaml
       multiqc .
       """
 }

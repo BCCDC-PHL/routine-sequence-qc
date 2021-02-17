@@ -1,0 +1,12 @@
+show_analysis_paths: False
+fn_clean_exts:
+  - "_"
+table_columns_visible:
+  Kraken: False
+top_modules:
+  - "interop"
+  - "fastqc"
+remove_sections:
+  - fastqc_per_base_sequence_content
+  - fastqc_per_base_n_content
+  - fastqc_sequence_length_distribution

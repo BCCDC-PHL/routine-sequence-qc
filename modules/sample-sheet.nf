@@ -21,6 +21,6 @@ process parse_sample_sheet {
 
     script:
       """
-      samplesheet_parser_basic.py ${sample_sheet} > sample_sheet.json
+      samplesheet_parser_basic.py ${sample_sheet} | python -m json.tool > sample_sheet.json
       """
 }

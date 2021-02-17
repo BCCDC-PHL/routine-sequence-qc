@@ -7,7 +7,7 @@ process bracken {
     cpus 2
 
     input:
-      tuple val(sample_id), path(kraken2_report), path(bracken_db), val(taxonomic_level)
+      tuple val(sample_id), path(kraken2_report), path(bracken_db), path(sample_sheet_json), val(taxonomic_level)
 
     output:
       tuple val(sample_id), path("${sample_id}_${taxonomic_level}_bracken.txt"), path("${sample_id}_${taxonomic_level}_multiqc_bracken.txt"), path("${sample_id}_${taxonomic_level}_bracken_abundances.tsv"), val(taxonomic_level)
@@ -19,7 +19,12 @@ process bracken {
     // The output is modified slightly to mimic kraken2 output so that it can be parsed by MultiQC.
     // The original outputs are stored to the output dir, and the modified ones are sent to MultiQC.
     """
-    bracken -d ${bracken_db} -i ${kraken2_report} -w ${sample_id}_${taxonomic_level}_bracken.txt -o ${sample_id}_${taxonomic_level}_bracken_abundances_unsorted.tsv -r 250 -l ${taxonomic_level_char}
+    bracken -d ${bracken_db} \
+      -i ${kraken2_report} \
+      -w ${sample_id}_${taxonomic_level}_bracken.txt \
+      -o ${sample_id}_${taxonomic_level}_bracken_abundances_unsorted.tsv \
+      -r \$(get_read_length.py ${sample_sheet_json}) \
+      -l ${taxonomic_level_char}
     head -n 1 ${sample_id}_${taxonomic_level}_bracken_abundances_unsorted.tsv > bracken_abundances_header.tsv
     tail -n+2 ${sample_id}_${taxonomic_level}_bracken_abundances_unsorted.tsv | sort -t \$'\\t' -nrk 7,7 > ${sample_id}_${taxonomic_level}_bracken_abundances_data.tsv
     cat bracken_abundances_header.tsv ${sample_id}_${taxonomic_level}_bracken_abundances_data.tsv > ${sample_id}_${taxonomic_level}_bracken_abundances.tsv

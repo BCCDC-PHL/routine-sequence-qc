@@ -19,7 +19,7 @@ workflow {
   ch_kraken2_db = Channel.fromPath(params.kraken2_db)
   ch_bracken_db = Channel.fromPath(params.bracken_db)
   ch_taxonomic_levels = Channel.from('Genus', 'Species')
-  
+
   main:
     interop_summary(ch_run_id.combine(ch_run_dir))
 
@@ -28,7 +28,7 @@ workflow {
     fastqc(ch_fastq)
 
     kraken2(ch_fastq.combine(ch_kraken2_db))
-    bracken(kraken2.out.combine(ch_bracken_db).combine(ch_taxonomic_levels))
+    bracken(kraken2.out.combine(ch_bracken_db).combine(parse_sample_sheet.out).combine(ch_taxonomic_levels))
 
     abundance_top_n(bracken.out)
 

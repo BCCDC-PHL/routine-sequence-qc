@@ -6,6 +6,8 @@ process multiqc {
     */
 
     tag { run_id }
+    
+    validExitStatus 0,1
 
     publishDir "${params.outdir}/${task.process.replaceAll(":","_")}", pattern: "multiqc_*", mode: 'copy'
 

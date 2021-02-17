@@ -2,6 +2,8 @@ process bracken {
 
     tag { sample_id + " / " + taxonomic_level }
 
+    errorStrategy 'ignore'
+
     publishDir "${params.outdir}/${task.process.replaceAll(":","_")}", pattern: "${sample_id}_${taxonomic_level}_bracken*", mode: 'copy'
 
     cpus 2

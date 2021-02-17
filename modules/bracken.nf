@@ -40,6 +40,8 @@ process abundance_top_n {
 
     tag { sample_id + " / " + taxonomic_level }
 
+    errorStrategy 'ignore'
+
     executor 'local'
 
     cpus 1

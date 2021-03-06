@@ -15,7 +15,7 @@ of reads. Estimation of relative abundances of taxonomic groups (genus, species)
 ## Usage
 
 ```
-nextflow run BCCDC-PHL/routine-sequence-qc-nf --run_dir <your illumina run directory> --outdir <output directory>
+nextflow run BCCDC-PHL/routine-sequence-qc --run_dir <your illumina run directory> --outdir <output directory>
 ```
 
 ## Outputs

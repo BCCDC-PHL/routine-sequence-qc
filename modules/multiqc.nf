@@ -10,6 +10,7 @@ process multiqc {
     validExitStatus 0,1
 
     publishDir "${params.outdir}/${task.process.replaceAll(":","_")}", pattern: "multiqc_*", mode: 'copy'
+    publishDir "${params.outdir}", pattern: "pipeline_complete.json", mode: 'copy'
 
     cpus 2
 
@@ -17,7 +18,7 @@ process multiqc {
       tuple path(multiqc_config), val(run_id), path(qc_outdir)
 
     output:
-      tuple path("multiqc_report.html"), path("multiqc_data")
+      tuple path("multiqc_report.html"), path("multiqc_data"), path("pipeline_complete.json")
 
     script:
       """
@@ -25,5 +26,6 @@ process multiqc {
       echo "report_header_info:" >> multiqc_config.yaml
       echo "  - Run ID: ${run_id}" >> multiqc_config.yaml
       multiqc .
+      echo "{\\"pipeline_name\\": \\"BCCDC-PHL/routine-irida-upload\\", \\"timestamp_completed\\": \\"\$(date --iso=seconds)\\"}" > pipeline_complete.json
       """
 }

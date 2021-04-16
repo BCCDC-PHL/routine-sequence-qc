@@ -2,8 +2,16 @@
 
 import argparse
 import json
+import re
 
 from pprint import pprint
+
+
+# https://stackoverflow.com/a/1176023
+def camel_to_snake(name):
+  name = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', name)
+  return re.sub('([a-z0-9])([A-Z])', r'\1_\2', name).lower()
+
 
 def parse_header_section(path_to_sample_sheet):
   header_lines = []
@@ -18,7 +26,7 @@ def parse_header_section(path_to_sample_sheet):
               header_lines.append(line.strip().rstrip(','))
 
   for line in header_lines:
-      header_key = line.split(',')[0].lower().replace(" ", "_")
+      header_key = camel_to_snake(line.split(',')[0])
 
       if len(line.split(',')) > 1:
         header_value = line.split(',')[1]
@@ -44,7 +52,7 @@ def parse_reads_section(path_to_sample_sheet):
           reads_lines.append(line.strip().rstrip(','))
 
   for line in reads_lines:
-    reads_key = line.split(',')[0].lower().replace(" ", "_")
+    reads_key = camel_to_snake(line.split(',')[0])
     if len(line.split(',')) > 1:
       reads_value = int(line.split(',')[1])
     else:
@@ -69,7 +77,7 @@ def parse_sequencing_settings_section(path_to_sample_sheet):
           sequencing_settings_lines.append(line.strip().rstrip(','))
 
   for line in sequencing_settings_lines:
-    sequencing_settings_key = line.split(',')[0].lower().replace(" ", "_")
+    sequencing_settings_key = camel_to_snake(line.split(',')[0])
 
     if len(line.split(',')) > 1:
       sequencing_settings_value = line.split(',')[1]
@@ -80,6 +88,7 @@ def parse_sequencing_settings_section(path_to_sample_sheet):
       sequencing_settings[sequencing_settings_key] = sequencing_settings_value
               
   return sequencing_settings
+
 
 def parse_bclconvert_settings_section(path_to_sample_sheet):
   bclconvert_settings_lines = []
@@ -94,7 +103,7 @@ def parse_bclconvert_settings_section(path_to_sample_sheet):
           bclconvert_settings_lines.append(line.strip().rstrip(','))
 
   for line in bclconvert_settings_lines:
-    bclconvert_settings_key = line.split(',')[0].lower().replace(" ", "_")
+    bclconvert_settings_key = camel_to_snake(line.split(',')[0])
 
     if len(line.split(',')) > 1:
       bclconvert_settings_value = line.split(',')[1]
@@ -119,7 +128,7 @@ def parse_bclconvert_data_section(path_to_sample_sheet):
               break
           bclconvert_data_lines.append(line.strip().rstrip(','))
 
-  bclconvert_data_keys = [x.lower() for x in bclconvert_data_lines[0].split(',')]
+  bclconvert_data_keys = [camel_to_snake(x) for x in bclconvert_data_lines[0].split(',')]
   for line in bclconvert_data_lines[1:]:
     d = {}
     values = line.split(',')
@@ -142,7 +151,7 @@ def parse_cloud_settings_section(path_to_sample_sheet):
           cloud_settings_lines.append(line.strip().rstrip(','))
 
   for line in cloud_settings_lines:
-    cloud_settings_key = line.split(',')[0].lower().replace(" ", "_")
+    cloud_settings_key = camel_to_snake(line.split(',')[0])
 
     if len(line.split(',')) > 1:
       cloud_settings_value = line.split(',')[1]
@@ -167,7 +176,7 @@ def parse_cloud_data_section(path_to_sample_sheet):
               break
           cloud_data_lines.append(line.strip().rstrip(','))
 
-  cloud_data_keys = [x.lower() for x in cloud_data_lines[0].split(',')]
+  cloud_data_keys = [camel_to_snake(x) for x in cloud_data_lines[0].split(',')]
   for line in cloud_data_lines[1:]:
     d = {}
     values = line.split(',')

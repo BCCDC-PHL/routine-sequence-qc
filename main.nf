@@ -10,8 +10,17 @@ include { kraken2 } from './modules/kraken2.nf'
 include { bracken } from './modules/bracken.nf'
 include { abundance_top_n } from './modules/bracken.nf'
 
+if (params.instrument_type == "miseq") {
+  fastq_subdir = "Data/Intensities/BaseCalls"
+} else if (params.instrument_type == "nextseq") {
+  fastq_subdir = "Analysis/1/Data/fastq"
+} else {
+  println("Unsupported instrument type: ${params.instrument_type}")
+  System.exit(1)
+}
+
 workflow {
-  ch_fastq = Channel.fromFilePairs( "${params.run_dir}/Data/Intensities/BaseCalls/*_{R1,R2}_*.fastq.gz" )
+  ch_fastq = Channel.fromFilePairs( "${params.run_dir}/${fastq_subdir}/*_{R1,R2}_*.fastq.gz" )
   ch_sample_sheet = Channel.fromPath( "${params.run_dir}/SampleSheet*.csv" )
   ch_multiqc_config = Channel.fromPath( "${projectDir}/assets/multiqc_config_base.yaml" )
   ch_run_dir = Channel.fromPath(params.run_dir)
@@ -23,8 +32,6 @@ workflow {
   main:
     
     interop_summary(ch_run_id.combine(ch_run_dir))
-
-    ch_sample_sheet.view()
 
     parse_sample_sheet(ch_run_id.combine(ch_sample_sheet))
 

@@ -20,7 +20,8 @@ process parse_sample_sheet {
       path("sample_sheet.json")
 
     script:
+    def parser_script = params.instrument_type == "miseq" ? "samplesheet_parser_miseq.py" : "samplesheet_parser_nextseq.py"
       """
-      samplesheet_parser_basic.py ${sample_sheet} | python -m json.tool > sample_sheet.json
+      ${parser_script} ${sample_sheet} | python -m json.tool > sample_sheet.json
       """
 }

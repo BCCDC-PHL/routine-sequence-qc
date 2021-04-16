@@ -12,7 +12,7 @@ include { abundance_top_n } from './modules/bracken.nf'
 
 workflow {
   ch_fastq = Channel.fromFilePairs( "${params.run_dir}/Data/Intensities/BaseCalls/*_{R1,R2}_*.fastq.gz" )
-  ch_sample_sheet = Channel.fromPath( "${params.run_dir}/SampleSheet.csv" )
+  ch_sample_sheet = Channel.fromPath( "${params.run_dir}/SampleSheet*.csv" )
   ch_multiqc_config = Channel.fromPath( "${projectDir}/assets/multiqc_config_base.yaml" )
   ch_run_dir = Channel.fromPath(params.run_dir)
   ch_run_id = Channel.fromPath(params.run_dir).map{ it -> it.baseName }
@@ -21,7 +21,10 @@ workflow {
   ch_taxonomic_levels = Channel.from('Genus', 'Species')
 
   main:
+    
     interop_summary(ch_run_id.combine(ch_run_dir))
+
+    ch_sample_sheet.view()
 
     parse_sample_sheet(ch_run_id.combine(ch_sample_sheet))
 

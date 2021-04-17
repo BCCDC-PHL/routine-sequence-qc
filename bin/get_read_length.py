@@ -7,7 +7,11 @@ import json
 def main(args):
   with open(args.sample_sheet_json, 'r') as f:
     sample_sheet = json.load(f)
-  actual_read_length = sample_sheet['reads'][0]
+
+  if sample_sheet['header']['instrument_type'] == "MiSeq":
+    actual_read_length = sample_sheet['reads'][0]
+  elif sample_sheet['header']['instrument_type'] == "NextSeq2000":
+    actual_read_length = sample_sheet['reads']['read1_cycles']
 
   if actual_read_length < 60:
       read_length = 50

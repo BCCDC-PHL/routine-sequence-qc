@@ -176,17 +176,18 @@ def parse_cloud_data_section(path_to_sample_sheet):
               break
           cloud_data_lines.append(line.strip().rstrip(','))
 
-  cloud_data_keys = [camel_to_snake(x) for x in cloud_data_lines[0].split(',')]
-  for line in cloud_data_lines[1:]:
-    d = {}
-    values = line.split(',')
-    for idx, key in enumerate(cloud_data_keys):
-      try:
-        d[key] = values[idx]
-      except IndexError as e:
-        d[key] = ""
-    cloud_data.append(d)
-
+  if cloud_data_lines:
+    cloud_data_keys = [camel_to_snake(x) for x in cloud_data_lines[0].split(',')]
+    for line in cloud_data_lines[1:]:
+      d = {}
+      values = line.split(',')
+      for idx, key in enumerate(cloud_data_keys):
+        try:
+          d[key] = values[idx]
+        except IndexError as e:
+          d[key] = ""
+        cloud_data.append(d)
+  
   return cloud_data
 
 
@@ -203,8 +204,11 @@ def main(args):
   sample_sheet['reads'] = reads
   sample_sheet['sequencing_settings'] = sequencing_settings
   sample_sheet['bclconvert_settings'] = bclconvert_settings
-  sample_sheet['cloud_settings'] = cloud_settings
-  sample_sheet['cloud_data'] = cloud_data
+  sample_sheet['bclconvert_data'] = bclconvert_data
+  if cloud_settings:
+    sample_sheet['cloud_settings'] = cloud_settings
+  if cloud_data:
+    sample_sheet['cloud_data'] = cloud_data
 
   print(json.dumps(sample_sheet))
   

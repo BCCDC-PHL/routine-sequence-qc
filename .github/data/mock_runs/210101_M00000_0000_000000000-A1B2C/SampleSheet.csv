@@ -1,0 +1,23 @@
+[Header]
+IEMFileVersion,5
+Investigator Name,Dr. Genius
+Experiment Name,Test Run 1
+Date,1/1/2021
+Workflow,GenerateFASTQ
+Application,FASTQ Only
+Instrument Type,MiSeq
+Assay,Illumina DNA Prep
+Index Adapters,IDT-Ilmn DNA-RNA UD Indexes SetA Tagmentation
+Chemistry,Amplicon
+[Reads]
+151
+151
+[Settings]
+ReverseComplement,0
+Adapter,CTGTCTCTTATACACATCT
+[Data]
+Sample_ID,Sample_Name,Sample_Plate,Sample_Well,Index_Plate_Well,I7_Index_ID,index,I5_Index_ID,index2,Sample_Project,Description
+S1,test-01,plate-01,A01,A01,UDP0001,GAACTGAGCG,UDP0001,TCGTGGAGCG,Test Project,Our first sample
+S2,test-02,plate-01,B01,B01,UDP0002,AGGTCAGATA,UDP0002,CTACAAGATA,Test Project,Our second sample
+S3,test-03,plate-01,C01,C01,UDP0003,CGTCTCATAT,UDP0003,TATAGTAGCT,Test Project,Our third sample
+S4,negative-control,plate-01,D01,D01,UDP0004,ATTCCATAAG,UDP0004,TGCCTGGTGG,Test Project,A negative control

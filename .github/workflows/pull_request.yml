@@ -39,7 +39,7 @@ jobs:
     - name: Download Reference Genomes
       run: bash .github/scripts/download_reference_genomes.sh ./github/data/ref_genome_list.txt
     - name: Install ART Read Simulator
-      run: bash .github/scripts/install_art_read_simulator.sh
+      run: bash .github/scripts/install_art.sh
     - name: Generate Simulated Reads
       run: bash .github/scripts/generate_simulated_reads.sh
     - name: Test against previous release

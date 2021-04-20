@@ -4,4 +4,4 @@ set -eo pipefail
 
 echo "Install NCBI Genome Download tool using conda.." >> artifacts/test_artifact.log
 
-conda create -y -n ncbi-acc-download ncbi-acc-download
+conda create --yes --name ncbi-acc-download --prefix /opt/miniconda3/envs/ncbi-acc-download

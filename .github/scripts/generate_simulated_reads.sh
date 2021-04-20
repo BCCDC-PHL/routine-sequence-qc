@@ -2,6 +2,8 @@
 
 set -eo pipefail
 
+export PATH=/opt/art/bin/:${PATH}
+
 pushd ${PWD}/.github/data/mock_runs/210101_M00000_0000_000000000-A1B2C/Data/Intensities/BaseCalls/
 
 art_illumina --seqSys MSv3 --paired -i ../../../../../ref_genomes/NC_002695.2.fa --fcov 5 --mflen 500 --sdev 25 --len 250 --noALN -o test-01_R > ../../../../../../../artifacts/test-01_read_generation_log.txt

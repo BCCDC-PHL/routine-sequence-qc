@@ -14,7 +14,7 @@ art_illumina --seqSys MSv3 --paired -i ../../../../../ref_genomes/NZ_CP033744.1.
 
 art_illumina --seqSys MSv3 --paired -i ../../../../../ref_genomes/NC_003197.2.fa --fcov 5 --mflen 500 --sdev 25 --len 250 --noALN -o negative-control_R > ../../../../../../../artifacts/negative-control_read_generation_log.txt
 
-rename fq fastq *.fq
+rename s/fq/fastq/ *.fq
 
 gzip *.fastq
 

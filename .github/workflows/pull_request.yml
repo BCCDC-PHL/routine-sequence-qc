@@ -36,10 +36,10 @@ jobs:
       run: |
        export PATH=/opt/miniconda3/bin:$PATH
        conda install -y ncbi-acc-download
-    - name: Download Reference Genomes
-      run: bash .github/scripts/download_reference_genomes.sh ./github/data/ref_genome_list.txt
     - name: Install ART Read Simulator
       run: bash .github/scripts/install_art.sh
+    - name: Download Reference Genomes
+      run: bash .github/scripts/download_reference_genomes.sh ./github/data/ref_genome_list.txt
     - name: Generate Simulated Reads
       run: bash .github/scripts/generate_simulated_reads.sh
     - name: Test against previous release

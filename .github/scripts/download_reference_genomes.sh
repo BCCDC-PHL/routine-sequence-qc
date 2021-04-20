@@ -2,7 +2,7 @@
 
 set -eo pipefail
 
-source /opt/miniconda3/bin/activate ncbi-acc-download
+source /opt/miniconda3/bin/activate /opt/miniconda3/envs/ncbi-acc-download
 
 echo "Download Reference Genomes..." >> artifacts/test_artifact.log
 

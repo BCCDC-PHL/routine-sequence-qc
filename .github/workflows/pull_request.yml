@@ -31,7 +31,7 @@ jobs:
       if: steps.cache-miniconda.outputs.cache-hit != 'true'
       run: bash .github/scripts/install_conda.sh
     - name: Install NCBI Genome Downloader Tool
-      run: bash .github/scripts/install_ncbi_genome_download.sh
+      run: bash .github/scripts/install_ncbi-acc-download.sh
     - name: Download Reference Genomes
       run: bash .github/scripts/download_reference_genomes.sh ./github/data/ref_genome_list.txt
     - name: Install ART Read Simulator

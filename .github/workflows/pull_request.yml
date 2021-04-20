@@ -30,6 +30,8 @@ jobs:
     - name: Install Miniconda
       if: steps.cache-miniconda.outputs.cache-hit != 'true'
       run: bash .github/scripts/install_conda.sh
+    - name: Install Nextflow
+      run: bash .github/scripts/install_nextflow.sh
     - name: Install ncbi-acc-download
       run: |
        export PATH=/opt/miniconda3/bin:$PATH
@@ -38,9 +40,8 @@ jobs:
       run: bash .github/scripts/download_reference_genomes.sh ./github/data/ref_genome_list.txt
     - name: Install ART Read Simulator
       run: bash .github/scripts/install_art_read_simulator.sh
-    - name: Install Nextflow
-      run: bash .github/scripts/install_nextflow.sh
-      
+    - name: Generate Simulated Reads
+      run: bash .github/scripts/generate_simulated_reads.sh
     - name: Test against previous release
       run: bash .github/scripts/test_against_previous_release.sh
     - name: if failure, add latest NF log to artifacts

@@ -30,10 +30,10 @@ jobs:
     - name: Install Miniconda
       if: steps.cache-miniconda.outputs.cache-hit != 'true'
       run: bash .github/scripts/install_conda.sh
-    - name: install Nextflow via Conda
+    - name: Install ncbi-acc-download
       run: |
        export PATH=/opt/miniconda3/bin:$PATH
-       conda install -c bioconda ncbi-acc-download
+       conda install -y ncbi-acc-download
     - name: Download Reference Genomes
       run: bash .github/scripts/download_reference_genomes.sh ./github/data/ref_genome_list.txt
     - name: Install ART Read Simulator

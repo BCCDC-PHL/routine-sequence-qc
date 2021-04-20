@@ -2,6 +2,8 @@
 
 set -eo pipefail
 
+export PATH=/opt/miniconda3/bin:${PATH}
+
 echo "Download Reference Genomes..." >> artifacts/test_artifact.log
 
 mkdir -p $PWD/.github/data/ref_genomes

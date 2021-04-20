@@ -2,8 +2,6 @@
 
 set -eo pipefail
 
-conda activate /opt/miniconda3/envs/ncbi-acc-download
-
 echo "Download Reference Genomes..." >> artifacts/test_artifact.log
 
 mkdir -p $PWD/.github/data/ref_genomes

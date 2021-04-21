@@ -10,9 +10,9 @@ mkdir -p $PWD/.github/data/ref_genomes
 
 pushd $PWD/.github/data/ref_genomes
 
-while read -r accession; do
-    ncbi-acc-download --format fasta ${accession}
+while IFS=$'\t' read -r accession accession_version taxid gi ; do
+    ncbi-acc-download --format fasta ${accession_version}
     sleep 5
-done < ../ref_genome_list.txt
+done < ../kraken2_db/taxonomy/nucl_gb.accession2taxid 
 
 popd

@@ -56,6 +56,8 @@ jobs:
       run: bash .github/scripts/create_kraken2_db.sh
     - name: Create Bracken DB
       run: bash .github/scripts/create_bracken_db.sh
+    - name: Download Example InterOp data
+      run: bash .github/scripts/download_example_interop_data.sh
     - name: Generate Simulated Reads
       run: bash .github/scripts/generate_simulated_reads.sh
     - name: Test against previous release

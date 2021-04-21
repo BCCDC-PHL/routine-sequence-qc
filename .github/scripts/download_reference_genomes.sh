@@ -13,6 +13,6 @@ pushd $PWD/.github/data/ref_genomes
 while IFS=$'\t' read -r accession accession_version taxid gi ; do
     ncbi-acc-download --format fasta ${accession_version}
     sleep 5
-done < ../kraken2_db/taxonomy/nucl_gb.accession2taxid 
+done < <(tail -n+2 ../kraken2_db/taxonomy/nucl_gb.accession2taxid)
 
 popd

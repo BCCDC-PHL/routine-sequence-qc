@@ -27,6 +27,14 @@ jobs:
       with:
         path: ~/.conda/envs
         key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('environments') }}
+    - name: Cache Kraken2/Bracken DB
+      id: cache-kraken2-db
+      uses: actions/cache@v2
+      env:
+        cache-name: cache-krakan2-db
+      with:
+        path: $PWD/.github/data/kraken2_db
+        key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('.github/data/ref_genome_list.txt') }}
     - name: Install Miniconda
       if: steps.cache-miniconda.outputs.cache-hit != 'true'
       run: bash .github/scripts/install_conda.sh
@@ -46,6 +54,8 @@ jobs:
       run: bash .github/scripts/download_reference_genomes.sh ./github/data/ref_genome_list.txt
     - name: Create Kraken2 DB
       run: bash .github/scripts/create_kraken2_db.sh
+    - name: Create Bracken DB
+      run: bash .github/scripts/create_bracken_db.sh
     - name: Generate Simulated Reads
       run: bash .github/scripts/generate_simulated_reads.sh
     - name: Test against previous release

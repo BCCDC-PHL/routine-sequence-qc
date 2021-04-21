@@ -10,9 +10,9 @@ echo "Nextflow run current PR..." >> artifacts/test_artifact.log
 NXF_VER=20.10.0 nextflow -quiet run ./main.nf \
        -profile conda \
        --cache ~/.conda/envs \
-       --kraken2_db $PWD/.github/data/___ \
-       --bracken_db $PWD/.github/data/___ \
-       --run_dir $PWD/.github/data/___ \
+       --kraken2_db $PWD/.github/data/kraken2_db \
+       --bracken_db $PWD/.github/data/kraken2_db \
+       --run_dir $PWD/.github/data/mock_runs/210101_M00000_0000_000000000-A1B2C \
        --outdir pr_output
 
 cp .nextflow.log artifacts/

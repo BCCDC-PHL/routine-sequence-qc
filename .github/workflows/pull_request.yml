@@ -36,10 +36,16 @@ jobs:
       run: |
        export PATH=/opt/miniconda3/bin:$PATH
        conda install -y ncbi-acc-download
+    - name: Install kraken2 & bracken
+      run: |
+       export PATH=/opt/miniconda3/bin:$PATH
+       conda install -y kraken2 bracken
     - name: Install ART Read Simulator
       run: bash .github/scripts/install_art.sh
     - name: Download Reference Genomes
       run: bash .github/scripts/download_reference_genomes.sh ./github/data/ref_genome_list.txt
+    - name: Create Kraken2 DB
+      run: bash .github/scripts/create_kraken2_db.sh
     - name: Generate Simulated Reads
       run: bash .github/scripts/generate_simulated_reads.sh
     - name: Test against previous release

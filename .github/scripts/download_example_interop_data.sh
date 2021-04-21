@@ -15,4 +15,15 @@ mv cellranger-tiny-bcl-1.2.0/runParameters.xml mock_runs/210101_M00000_0000_0000
 
 rm -r cellranger-tiny-bcl-1.2.0
 
+# RunInfo.xml doesn't match InterOp data for some reason, so
+# edit RunInfo.xml to match
+cat mock_runs/210101_M00000_0000_000000000-A1B2C/RunInfo.xml | \
+    sed 's/LaneCount="1"/LaneCount="2"/' | \
+    sed 's/SurfaceCount="1"/SurfaceCount="2"/' | \
+    sed 's/SwathCount="1"/SwathCount="2"/' | \
+    sed 's/TileCount="1"/TileCount="32"/' \
+	> RunInfo.edited.xml
+
+mv RunInfo.edited.xml mock_runs/210101_M00000_0000_000000000-A1B2C/RunInfo.xml
+
 popd

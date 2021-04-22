@@ -15,7 +15,8 @@ NXF_VER=20.10.0 nextflow -quiet run ./main.nf \
        --run_dir ${PWD}/.github/data/mock_runs/210101_M00000_0000_000000000-A1B2C \
        --outdir results
 
-cp .nextflow.log artifacts/
+cp .nextflow.log artifacts/pull_request.nextflow.log
+cp -r results ../artifacts/pull_request_results
 
 # run tests against previous previous_release to compare outputs 
 git clone https://github.com/BCCDC-PHL/routine-sequence-qc.git previous_release 
@@ -32,6 +33,7 @@ NXF_VER=20.10.0 nextflow -quiet run ./main.nf \
        --outdir results
 
 cp .nextflow.log ../artifacts/previous_release.nextflow.log
+cp -r results ../artifacts/previous_release_results
 
 popd
 
@@ -44,6 +46,7 @@ find results ./previous_release/results \
      -o -name "*.bam.bai" \
      -o -name "*.vcf" \
     | xargs rm -rf
+
 if ! git diff --stat --no-index results ./previous_release/results > diffs.txt ; then
   echo "test failed: differences found between PR and previous release" >> artifacts/test_artifact.log
   echo "see diffs.txt" >> artifacts/test_artifact.log 

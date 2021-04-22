@@ -13,7 +13,7 @@ jobs:
       run: mkdir artifacts
     - name: Cache Miniconda installation
       id: cache-miniconda
-      uses: actions/cache@v2
+      uses: pat-s/always-upload-cache@v2
       env:
         cache-name: cache-miniconda-installation
       with:
@@ -21,7 +21,7 @@ jobs:
         key: ${{ runner.os }}-build-${{ env.cache-name }}-miniconda3
     - name: Cache conda environment
       id: cache-conda-env
-      uses: actions/cache@v2
+      uses: pat-s/always-upload-cache@v2
       env:
         cache-name: cache-conda-env
       with:
@@ -29,12 +29,22 @@ jobs:
         key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('environments') }}
     - name: Cache Kraken2/Bracken DB
       id: cache-kraken2-db
-      uses: actions/cache@v2
+      uses: pat-s/always-upload-cache@v2
       env:
         cache-name: cache-krakan2-db
       with:
         path: $PWD/.github/data/kraken2_db
-        key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('.github/data/ref_genome_list.txt') }}
+        key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('.github/data/kraken2_db/taxonomy/nucl_gb.accession2taxid') }}
+    - name: Cache Example InterOp Data
+      id: cache-example-interop-data
+      uses: pat-s/always-upload-cache@v2
+      env:
+        cache-name: cache-example-interop-data
+      with:
+        path: |
+          $PWD/.github/data/mock_runs/210101_M00000_0000_000000000-A1B2C/InterOp
+          $PWD/.github/data/mock_runs/210101_M00000_0000_000000000-A1B2C/*.xml
+        key: ${{ runner.os }}-build-${{ env.cache-name }}
     - name: Install Miniconda
       if: steps.cache-miniconda.outputs.cache-hit != 'true'
       run: bash .github/scripts/install_conda.sh
@@ -53,10 +63,13 @@ jobs:
     - name: Download Reference Genomes
       run: bash .github/scripts/download_reference_genomes.sh ./github/data/ref_genome_list.txt
     - name: Create Kraken2 DB
+      if: steps.cache-kraken2-db.outputs.cache-hit != 'true'
       run: bash .github/scripts/create_kraken2_db.sh
     - name: Create Bracken DB
+      if: steps.cache-kraken2-db.outputs.cache-hit != 'true'
       run: bash .github/scripts/create_bracken_db.sh
     - name: Download Example InterOp data
+      if: steps.cache-example-interop-data.outputs.cache-hit != 'true'
       run: bash .github/scripts/download_example_interop_data.sh
     - name: Generate Simulated Reads
       run: bash .github/scripts/generate_simulated_reads.sh

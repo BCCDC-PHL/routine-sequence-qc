@@ -7,7 +7,7 @@ export PATH=/opt/nextflow/bin:$PATH
 
 # write test log as github Action artifact
 echo "Nextflow run current PR..." >> artifacts/test_artifact.log
-NXF_VER=20.10.0 nextflow -C ${PWD}/../.github/config/nextflow.config -quiet run ./main.nf \
+NXF_VER=20.10.0 nextflow -C ${PWD}/.github/config/nextflow.config -quiet run ./main.nf \
        -profile conda \
        --cache ${HOME}/.conda/envs \
        --kraken2_db ${PWD}/.github/data/kraken2_db \

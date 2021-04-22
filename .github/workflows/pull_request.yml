@@ -76,7 +76,7 @@ jobs:
     - name: Install ART Read Simulator
       run: bash .github/scripts/install_art.sh
     - name: Download Reference Genomes
-      run: bash .github/scripts/download_reference_genomes.sh ./github/data/ref_genome_list.txt
+      run: bash .github/scripts/download_reference_genomes.sh
     - name: Create Kraken2 DB
       if: steps.cache-kraken2-db.outputs.cache-hit != 'true'
       run: bash .github/scripts/create_kraken2_db.sh

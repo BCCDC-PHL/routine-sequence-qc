@@ -26,9 +26,10 @@ jobs:
         cache-name: cache-nextflow
       with:
         path: |
-          ${HOME}/.m2
+          ~/.m2
+          ~/.nextflow
           /opt/nextflow
-        key: ${{ runner.os }}-build-${{ env.cache-name }}-1
+        key: ${{ runner.os }}-build-${{ env.cache-name }}-2
     - name: Cache conda environment
       id: cache-conda-env
       uses: pat-s/always-upload-cache@v2.1.3

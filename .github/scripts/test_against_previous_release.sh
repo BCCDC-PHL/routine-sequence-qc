@@ -16,7 +16,7 @@ NXF_VER=20.10.0 nextflow -quiet run ./main.nf \
        --outdir results
 
 cp .nextflow.log artifacts/pull_request.nextflow.log
-cp -r results ../artifacts/pull_request_results
+cp -r results artifacts/pull_request_results
 
 # run tests against previous previous_release to compare outputs 
 git clone https://github.com/BCCDC-PHL/routine-sequence-qc.git previous_release 

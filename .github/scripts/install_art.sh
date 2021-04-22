@@ -4,7 +4,7 @@ set -eo pipefail
 
 echo "Install ART .." >> artifacts/test_artifact.log
 
-wget https://www.niehs.nih.gov/research/resources/assets/docs/artbinmountrainier2016.06.05linux64.tgz && tar -xzf artbin*
+wget --quiet https://www.niehs.nih.gov/research/resources/assets/docs/artbinmountrainier2016.06.05linux64.tgz && tar -xzf artbin*
 
 mkdir -p /opt/art/bin
 

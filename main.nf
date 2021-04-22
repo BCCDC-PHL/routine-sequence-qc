@@ -20,7 +20,7 @@ if (params.instrument_type == "miseq") {
 }
 
 workflow {
-  ch_fastq = Channel.fromFilePairs( "${params.run_dir}/${fastq_subdir}/*_{R1,R2}_*.fastq.gz" )
+  ch_fastq = Channel.fromFilePairs( "${params.run_dir}/${fastq_subdir}/*_{R1,R2}*.fastq.gz" )
   ch_sample_sheet = Channel.fromPath( "${params.run_dir}/SampleSheet*.csv" )
   ch_multiqc_config = Channel.fromPath( "${projectDir}/assets/multiqc_config_base.yaml" )
   ch_run_dir = Channel.fromPath(params.run_dir)

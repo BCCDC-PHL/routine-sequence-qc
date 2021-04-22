@@ -10,8 +10,8 @@ Assay,Illumina DNA Prep
 Index Adapters,IDT-Ilmn DNA-RNA UD Indexes SetA Tagmentation
 Chemistry,Amplicon
 [Reads]
-151
-151
+251
+251
 [Settings]
 ReverseComplement,0
 Adapter,CTGTCTCTTATACACATCT

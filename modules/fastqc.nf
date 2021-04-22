@@ -28,7 +28,11 @@ process fastqc {
       """
       fastqc -t 2 ${reads}
       for d in *.zip; do unzip \$d; done
-      mv ${sample_id}*_R1*_fastqc ${sample_id}_R1_fastqc
-      mv ${sample_id}*_R2*_fastqc ${sample_id}_R2_fastqc
+      if [ ! -d "${sample_id}_R1_fastqc" ] then
+        mv ${sample_id}*_R1*_fastqc ${sample_id}_R1_fastqc
+      fi
+      if [ ! -d "${sample_id}_R2_fastqc" ] then
+        mv ${sample_id}*_R2*_fastqc ${sample_id}_R2_fastqc
+      fi
       """
 }

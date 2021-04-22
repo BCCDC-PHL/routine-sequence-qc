@@ -1,4 +1,7 @@
 # Routine Sequence QC
+
+![Tests](https://github.com/BCCDC-PHL/routine-sequence-qc/actions/workflows/push_main.yml/badge.svg)
+
 A generic pipeline that can be run routinely on all Illumina sequence runs, regardless of the project or organism of interest.
 
 * Sequence quality information

@@ -6,7 +6,6 @@ process kraken2 {
 
     publishDir "${params.outdir}/${task.process.replaceAll(":","_")}", pattern: "${sample_id}_kraken2.txt", mode: 'copy'
 
-    cpus 8
 
     input:
       tuple val(grouping_key), path(reads), path(kraken2_db)

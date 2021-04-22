@@ -45,6 +45,8 @@ jobs:
           $PWD/.github/data/mock_runs/210101_M00000_0000_000000000-A1B2C/InterOp
           $PWD/.github/data/mock_runs/210101_M00000_0000_000000000-A1B2C/*.xml
         key: ${{ runner.os }}-build-${{ env.cache-name }}
+    - name: Install System Dependencies
+      run: bash .github/scripts/install_system_deps.sh
     - name: Install Miniconda
       if: steps.cache-miniconda.outputs.cache-hit != 'true'
       run: bash .github/scripts/install_conda.sh

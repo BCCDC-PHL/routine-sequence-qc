@@ -9,35 +9,31 @@ export PATH=/opt/nextflow/bin:$PATH
 echo "Nextflow run current PR..." >> artifacts/test_artifact.log
 NXF_VER=20.10.0 nextflow -quiet run ./main.nf \
        -profile conda \
-       --cache ~/.conda/envs \
-       --kraken2_db $PWD/.github/data/kraken2_db \
-       --bracken_db $PWD/.github/data/kraken2_db \
-       --run_dir $PWD/.github/data/mock_runs/210101_M00000_0000_000000000-A1B2C \
-       --outdir pr_output
+       --cache ${HOME}/.conda/envs \
+       --kraken2_db ${PWD}/.github/data/kraken2_db \
+       --bracken_db ${PWD}/.github/data/kraken2_db \
+       --run_dir ${PWD}/.github/data/mock_runs/210101_M00000_0000_000000000-A1B2C \
+       --outdir results
 
 cp .nextflow.log artifacts/
 
 # run tests against previous previous_release to compare outputs 
 git clone https://github.com/BCCDC-PHL/routine-sequence-qc.git previous_release 
-cd previous_release
-git checkout 26220ef1217229beb73393e74c56a57ea90150bf
+pushd previous_release
+git checkout adfffed374ae0212b707b042233652704286b4d7 -b previous-release
 
 echo "Nextflow run previous release..." >> ../artifacts/test_artifact.log
 NXF_VER=20.10.0 nextflow -quiet run ./main.nf \
        -profile conda \
-       --cache ~/.conda/envs \
-       --directory $PWD/../.github/data/fastqs/ \
-       --ref $PWD/../.github/data/refs/MN908947.3/MN908947.3.fa \
-       --bed $PWD/../.github/data/primer_schemes/nCoV-2019_Freed_1200bp.bed \
-       --primer_pairs_tsv $PWD/../.github/data/primer_schemes/nCoV-2019_Freed_1200bp_primer_pairs.tsv \
-       --gff $PWD/../.github/data/refs/MN908947.3.gff \
-       --composite_ref $PWD/../.github/data/refs/mock_composite_ref/mock_composite_ref.fa \
-       --illumina \
-       --prefix test
+       --cache ${HOME}/.conda/envs \
+       --kraken2_db ${PWD}/../.github/data/kraken2_db \
+       --bracken_db ${PWD}/../.github/data/kraken2_db \
+       --run_dir ${PWD}/../.github/data/mock_runs/210101_M00000_0000_000000000-A1B2C \
+       --outdir results
 
 cp .nextflow.log ../artifacts/previous_release.nextflow.log
 
-cd ..
+popd
 
 # exclude files from comparison
 # and list differences

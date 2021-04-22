@@ -30,6 +30,15 @@ jobs:
           ~/.nextflow
           /opt/nextflow
         key: ${{ runner.os }}-build-${{ env.cache-name }}-3
+    - name: Cache ART Installation
+      id: cache-art
+      uses: pat-s/always-upload-cache@v2.1.3
+      env:
+        cache-name: cache-art
+      with:
+        path: |
+          /opt/art
+        key: ${{ runner.os }}-build-${{ env.cache-name }}-0
     - name: Cache conda environment
       id: cache-conda-env
       uses: pat-s/always-upload-cache@v2.1.3
@@ -75,6 +84,7 @@ jobs:
        export PATH=/opt/miniconda3/bin:$PATH
        conda install -y kraken2 bracken
     - name: Install ART Read Simulator
+      if: steps.cache-art.outputs.cache-hit != 'true'
       run: bash .github/scripts/install_art.sh
     - name: Download Reference Genomes
       run: bash .github/scripts/download_reference_genomes.sh

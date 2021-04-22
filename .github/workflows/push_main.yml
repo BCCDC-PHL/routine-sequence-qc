@@ -55,6 +55,14 @@ jobs:
       with:
         path: $PWD/.github/data/kraken2_db
         key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('.github/data/kraken2_db/taxonomy/nucl_gb.accession2taxid') }}
+    - name: Cache Reference Genomes
+      id: cache-ref-genomes
+      uses: pat-s/always-upload-cache@v2.1.3
+      env:
+        cache-name: cache-ref-genomes
+      with:
+        path: $PWD/.github/data/ref_genomes
+        key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('.github/data/kraken2_db/taxonomy/nucl_gb.accession2taxid') }}
     - name: Cache Example InterOp Data
       id: cache-example-interop-data
       uses: pat-s/always-upload-cache@v2.1.3
@@ -87,6 +95,7 @@ jobs:
       if: steps.cache-art.outputs.cache-hit != 'true'
       run: bash .github/scripts/install_art.sh
     - name: Download Reference Genomes
+      if: steps.cache-ref-genomes.outputs.cache-hit != 'true'
       run: bash .github/scripts/download_reference_genomes.sh
     - name: Create Kraken2 DB
       if: steps.cache-kraken2-db.outputs.cache-hit != 'true'

@@ -11,14 +11,24 @@ jobs:
     - uses: actions/checkout@master
     - name: create artifacts dir to save test logs
       run: mkdir artifacts
-    - name: Cache Miniconda installation
+    - name: Cache Miniconda Installation
       id: cache-miniconda
       uses: pat-s/always-upload-cache@v2.1.3
       env:
-        cache-name: cache-miniconda-installation
+        cache-name: cache-miniconda
       with:
         path: /opt/miniconda3
         key: ${{ runner.os }}-build-${{ env.cache-name }}-miniconda3
+    - name: Cache Nextflow Installation
+      id: cache-nextflow
+      uses: pat-s/always-upload-cache@v2.1.3
+      env:
+        cache-name: cache-nextflow
+      with:
+        path: |
+          ${HOME}/.m2
+          /opt/nextflow
+        key: ${{ runner.os }}-build-${{ env.cache-name }}-nextflow
     - name: Cache conda environment
       id: cache-conda-env
       uses: pat-s/always-upload-cache@v2.1.3
@@ -42,21 +52,24 @@ jobs:
         cache-name: cache-example-interop-data
       with:
         path: |
-          $PWD/.github/data/mock_runs/210101_M00000_0000_000000000-A1B2C/InterOp
-          $PWD/.github/data/mock_runs/210101_M00000_0000_000000000-A1B2C/*.xml
-        key: ${{ runner.os }}-build-${{ env.cache-name }}
+          .github/data/mock_runs/210101_M00000_0000_000000000-A1B2C/InterOp
+          .github/data/mock_runs/210101_M00000_0000_000000000-A1B2C/*.xml
+        key: ${{ runner.os }}-build-${{ env.cache-name }}-1
     - name: Install System Dependencies
       run: bash .github/scripts/install_system_deps.sh
     - name: Install Miniconda
       if: steps.cache-miniconda.outputs.cache-hit != 'true'
       run: bash .github/scripts/install_conda.sh
     - name: Install Nextflow
+      if: steps.cache-nextflow.outputs.cache-hit != 'true'
       run: bash .github/scripts/install_nextflow.sh
     - name: Install ncbi-acc-download
+      if: steps.cache-miniconda.outputs.cache-hit != 'true'
       run: |
        export PATH=/opt/miniconda3/bin:$PATH
        conda install -y ncbi-acc-download
     - name: Install kraken2 & bracken
+      if: steps.cache-miniconda.outputs.cache-hit != 'true'
       run: |
        export PATH=/opt/miniconda3/bin:$PATH
        conda install -y kraken2 bracken

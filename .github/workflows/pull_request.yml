@@ -18,7 +18,7 @@ jobs:
         cache-name: cache-miniconda
       with:
         path: /opt/miniconda3
-        key: ${{ runner.os }}-build-${{ env.cache-name }}-miniconda3
+        key: ${{ runner.os }}-build-${{ env.cache-name }}-0
     - name: Cache Nextflow Installation
       id: cache-nextflow
       uses: pat-s/always-upload-cache@v2.1.3
@@ -28,7 +28,7 @@ jobs:
         path: |
           ${HOME}/.m2
           /opt/nextflow
-        key: ${{ runner.os }}-build-${{ env.cache-name }}-nextflow
+        key: ${{ runner.os }}-build-${{ env.cache-name }}-0
     - name: Cache conda environment
       id: cache-conda-env
       uses: pat-s/always-upload-cache@v2.1.3

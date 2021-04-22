@@ -62,7 +62,7 @@ jobs:
         cache-name: cache-ref-genomes
       with:
         path: $PWD/.github/data/ref_genomes
-        key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('.github/data/kraken2_db/taxonomy/nucl_gb.accession2taxid') }}
+        key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('.github/data/kraken2_db/taxonomy/nucl_gb.accession2taxid') }}-0
     - name: Cache Example InterOp Data
       id: cache-example-interop-data
       uses: pat-s/always-upload-cache@v2.1.3

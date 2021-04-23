@@ -21,7 +21,7 @@ cp -r results artifacts/pull_request_results
 # run tests against previous previous_release to compare outputs 
 git clone https://github.com/BCCDC-PHL/routine-sequence-qc.git previous_release 
 pushd previous_release
-git checkout adfffed374ae0212b707b042233652704286b4d7 -b previous-release
+git checkout 1a4197efd32cd03983a64c439cfe56ea09258fff -b previous-release
 
 echo "Nextflow run previous release..." >> ../artifacts/test_artifact.log
 NXF_VER=20.10.0 nextflow -C ${PWD}/../.github/config/nextflow.config -quiet run ./main.nf \

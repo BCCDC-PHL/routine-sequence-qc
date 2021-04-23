@@ -41,10 +41,11 @@ popd
 # and list differences
 echo "Compare ouputs of current PR vs those of previous release.." >> artifacts/test_artifact.log
 find results ./previous_release/results \
-     -name "*.fq.gz" \
-     -o -name "*.bam" \
-     -o -name "*.bam.bai" \
-     -o -name "*.vcf" \
+     -name "multiqc.log" \
+     -o -name "multiqc_sources.txt" \
+     -o -name "multiqc_data.json" \
+     -o -name "multiqc_report.html" \
+     -o -name "pipeline_complete.json" \
     | xargs rm -rf
 
 if ! git diff --stat --no-index results ./previous_release/results > diffs.txt ; then

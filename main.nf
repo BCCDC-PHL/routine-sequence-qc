@@ -9,6 +9,8 @@ include { parse_sample_sheet } from './modules/sample-sheet.nf'
 include { kraken2 } from './modules/kraken2.nf'
 include { bracken } from './modules/bracken.nf'
 include { abundance_top_n } from './modules/bracken.nf'
+include { mash } from './modules/mash.nf'
+include { mashTable } from './modules/mash.nf'
 
 if (params.instrument_type == "miseq") {
   fastq_subdir = "Data/Intensities/BaseCalls"
@@ -36,6 +38,9 @@ workflow {
     parse_sample_sheet(ch_run_id.combine(ch_sample_sheet))
 
     fastqc(ch_fastq)
+    
+    mash(ch_fastq)
+    mashTable(mash.out.collect())
 
     kraken2(ch_fastq.combine(ch_kraken2_db))
     bracken(kraken2.out.combine(ch_bracken_db).combine(parse_sample_sheet.out).combine(ch_taxonomic_levels))

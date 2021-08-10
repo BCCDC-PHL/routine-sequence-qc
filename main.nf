@@ -3,6 +3,7 @@
 nextflow.enable.dsl = 2
 
 include { fastqc } from './modules/fastqc.nf'
+include { seqkit_stats } from './modules/seqkit.nf'
 include { multiqc } from './modules/multiqc.nf'
 include { interop_summary } from './modules/interop.nf'
 include { parse_sample_sheet } from './modules/sample-sheet.nf'
@@ -36,6 +37,8 @@ workflow {
     parse_sample_sheet(ch_run_id.combine(ch_sample_sheet))
 
     fastqc(ch_fastq)
+
+    seqkit_stats(ch_fastq)
 
     kraken2(ch_fastq.combine(ch_kraken2_db))
     bracken(kraken2.out.combine(ch_bracken_db).combine(parse_sample_sheet.out).combine(ch_taxonomic_levels))

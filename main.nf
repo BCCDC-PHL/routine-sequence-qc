@@ -11,8 +11,8 @@ include { parse_sample_sheet } from './modules/sample-sheet.nf'
 include { kraken2 } from './modules/kraken2.nf'
 include { bracken } from './modules/bracken.nf'
 include { abundance_top_n } from './modules/bracken.nf'
-include { mash } from './modules/mash.nf'
-include { mashTable } from './modules/mash.nf'
+include { mash_sketch } from './modules/mash.nf'
+include { mash_sketch_summary } from './modules/mash.nf'
 
 if (params.instrument_type == "miseq") {
   fastq_subdir = "Data/Intensities/BaseCalls"
@@ -44,8 +44,8 @@ workflow {
     seqtk_fqchk(ch_fastq)
     seqtk_fqchk_summary(seqtk_fqchk.out).map{ it -> it[1] }.collectFile(keepHeader: true, sort: { it.text }, name: "seqtk_fqchk_summary.csv", storeDir: "${params.outdir}/seqtk_fqchk_summary")
 
-    mash(ch_fastq)
-    mashTable(mash.out.collect())
+    mash_sketch(ch_fastq)
+    mash_sketch_summary(mash_sketch.out).map{ it -> it[1] }.collectFile(keepHeader: true, sort: { it.text }, name: "mash_sketch_summary.csv", storeDir: "${params.outdir}/mash_sketch_summary")
 
     kraken2(ch_fastq.combine(ch_kraken2_db))
     bracken(kraken2.out.combine(ch_bracken_db).combine(parse_sample_sheet.out).combine(ch_taxonomic_levels))

@@ -33,11 +33,9 @@ process seqtk_fqchk {
       """
 }
 
-process seqtk_summarize {
+process seqtk_fqchk_summary {
 
     tag { sample_id }
-
-    publishDir "${params.outdir}/${task.process.replaceAll(":","_")}", pattern: "${sample_id}_seqtk_fqchk_summary.csv", mode: 'copy'
 
     cpus 1
 

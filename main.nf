@@ -42,7 +42,7 @@ workflow {
     fastqc(ch_fastq)
 
     seqtk_fqchk(ch_fastq)
-    seqtk_summarize(seqtk_fqchk.out)
+    seqtk_summarize(seqtk_fqchk.out).map{ it -> it[1] }.collectFile(keepHeader: true, sort: { it.text }, name: "seqtk_fqchk_summary.csv", storeDir: "${params.outdir}/seqtk_fqchk_summary")
 
     mash(ch_fastq)
     mashTable(mash.out.collect())

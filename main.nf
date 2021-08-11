@@ -4,7 +4,7 @@ nextflow.enable.dsl = 2
 
 include { fastqc } from './modules/fastqc.nf'
 include { seqtk_fqchk } from './modules/seqtk.nf'
-include { seqtk_summarize } from './modules/seqtk.nf'
+include { seqtk_fqchk_summary } from './modules/seqtk.nf'
 include { multiqc } from './modules/multiqc.nf'
 include { interop_summary } from './modules/interop.nf'
 include { parse_sample_sheet } from './modules/sample-sheet.nf'
@@ -42,7 +42,7 @@ workflow {
     fastqc(ch_fastq)
 
     seqtk_fqchk(ch_fastq)
-    seqtk_summarize(seqtk_fqchk.out).map{ it -> it[1] }.collectFile(keepHeader: true, sort: { it.text }, name: "seqtk_fqchk_summary.csv", storeDir: "${params.outdir}/seqtk_fqchk_summary")
+    seqtk_fqchk_summary(seqtk_fqchk.out).map{ it -> it[1] }.collectFile(keepHeader: true, sort: { it.text }, name: "seqtk_fqchk_summary.csv", storeDir: "${params.outdir}/seqtk_fqchk_summary")
 
     mash(ch_fastq)
     mashTable(mash.out.collect())

@@ -85,7 +85,9 @@ def parse_read_summary(summary_path):
     return read_summary
 
 
-def parse_lanes_by_read(summary_path):
+def parse_read_line(read_line, read_number):
+    parsed_read_line = {}
+
     headers_input_order = [
         'LaneNumber',
         'Surface',
@@ -112,6 +114,7 @@ def parse_lanes_by_read(summary_path):
     headers_output_order = [
         'ReadNumber',
         'LaneNumber',
+        'Surface',
         'TileCount',
         'Density',
         'DensityDeviation',
@@ -177,7 +180,51 @@ def parse_lanes_by_read(summary_path):
         'LaneNumber',
         'TileCount',
     ]
+
+    read_line_list = [record.strip() for record in read_line.strip().split(',')]
+    parsed_read_line = dict(zip(headers_input_order, read_line_list))
+    parsed_read_line['ReadNumber'] = read_number
+
+    for field in average_stdev_fields:
+        string_value = parsed_read_line[field]
+        [average, stdev] = [float(value) for value in string_value.split(' +/- ')]
+        deviation_field = field + 'Deviation'
+        parsed_read_line[field] = average
+        parsed_read_line[deviation_field] = stdev
+
+    for field, num_denom in slash_fields.items():
+        string_value = parsed_read_line[field]
+        numerator_field = num_denom['numerator_field']
+        denominator_field = num_denom['denominator_field']
+        [numerator, denominator] = [float(value) for value in string_value.split(' / ')]
+        parsed_read_line[numerator_field] = numerator
+        parsed_read_line[denominator_field] = denominator
+        parsed_read_line.pop(field, None)
+
+    for field in float_fields:
+        parsed_read_line[field] = float(parsed_read_line[field])
+
+    for field in int_fields:
+        parsed_read_line[field] = int(parsed_read_line[field])
+
+    parsed_read_line['Density'] = int(float(parsed_read_line['Density'] * 1000))
+    parsed_read_line['ClusterDensity'] = parsed_read_line['Density']
+    parsed_read_line['Reads'] = int(float(parsed_read_line['Reads'] * 1000000))
+    parsed_read_line['ReadsPf'] = int(float(parsed_read_line['ReadsPf'] * 1000000))
+
+    parsed_read_line.pop('OccupancyDeviation', None)
+    parsed_read_line.pop('LegacyPhasingPrephasingRate', None)
+
+    for k, v in parsed_read_line.items():
+        if type(v) is float and math.isnan(v):
+            parsed_read_line[k] = 0
+
+    parsed_read_line_ordered = collections.OrderedDict(sorted(parsed_read_line.items(), key=lambda x: headers_output_order.index(x[0])))
     
+    return parsed_read_line_ordered
+
+
+def parse_lanes_by_read(summary_path):    
     lanes_by_read = []
 
     with open(summary_path) as summary:
@@ -195,54 +242,16 @@ def parse_lanes_by_read(summary_path):
                 read_number = None
             else:
                 pass
-                
+
             if read_number and not re.match("^Lane", line) and not re.match("^Read", line):
-                read_line = [record.strip() for record in line.strip().split(',')]
-                read_line_dict = dict(zip(headers_input_order, read_line))
-                read_line_dict['ReadNumber'] = read_number
+                parsed_read_line = parse_read_line(line, read_number)
+                parsed_read_line['ReadNumber'] = read_number
             else:
-                read_line_dict = {}
+                parsed_read_line = {}
 
-            if read_line_dict:
-                for field in average_stdev_fields:
-                    string_value = read_line_dict[field]
-                    [average, stdev] = [float(value) for value in string_value.split(' +/- ')]
-                    deviation_field = field + 'Deviation'
-                    read_line_dict[field] = average
-                    read_line_dict[deviation_field] = stdev
-
-                for field, num_denom in slash_fields.items():
-                    string_value = read_line_dict[field]
-                    numerator_field = num_denom['numerator_field']
-                    denominator_field = num_denom['denominator_field']
-                    [numerator, denominator] = [float(value) for value in string_value.split(' / ')]
-                    read_line_dict[numerator_field] = numerator
-                    read_line_dict[denominator_field] = denominator
-                    read_line_dict.pop(field, None)
-
-                for field in float_fields:
-                    read_line_dict[field] = float(read_line_dict[field])
-
-                for field in int_fields:
-                    read_line_dict[field] = int(read_line_dict[field])
-
-                if read_line_dict['Surface'] == '-':
-                    read_line_dict['Density'] = int(float(read_line_dict['Density'] * 1000))
-                    read_line_dict['ClusterDensity'] = read_line_dict['Density']
-                    read_line_dict['Reads'] = int(float(read_line_dict['Reads'] * 1000000))
-                    read_line_dict['ReadsPf'] = int(float(read_line_dict['ReadsPf'] * 1000000))
-
-                    read_line_dict.pop('OccupancyDeviation', None)
-                    read_line_dict.pop('LegacyPhasingPrephasingRate', None)
-                    read_line_dict.pop('Surface', None)
-
-                    for k, v in read_line_dict.items():
-                        if type(v) is float and math.isnan(v):
-                            read_line_dict[k] = 0
-
-                    read_line_dict_ordered = collections.OrderedDict(sorted(read_line_dict.items(), key=lambda x: headers_output_order.index(x[0])))
-                
-                    lanes_by_read.append(read_line_dict_ordered)
+            if parsed_read_line and parsed_read_line['Surface'] == '-':
+                parsed_read_line.pop('Surface', None)
+                lanes_by_read.append(parsed_read_line)
     
     return lanes_by_read
 

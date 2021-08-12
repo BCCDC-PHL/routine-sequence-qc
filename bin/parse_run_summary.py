@@ -16,7 +16,7 @@ def parse_read_summary(summary_path):
         'Yield': 'YieldTotal',
         'Error Rate': 'ErrorRate',
         'Aligned': 'PercentAligned',
-        '% Occupied': 'PercentOccupied',
+        '% Occupied': 'Occupancy',
         'Level': 'ReadNumber',
         'Intensity C1': 'IntensityCycle1',
     }
@@ -28,18 +28,26 @@ def parse_read_summary(summary_path):
         'Read 4': 4,
     }
 
+    headers_output_order = [
+        'ReadNumber',
+        'IsIndexed',
+        'TotalCycles',
+        'YieldTotal',
+        'ProjectedTotalYield',
+        'PercentAligned',
+        'ErrorRate',
+        'IntensityCycle1',
+        'PercentGtQ30',
+    ]
+
     with open(summary_path) as summary:
         for line in summary:
             if re.match("^Level", line):
                 read_summary_headers = re.split("\s*,", line.rstrip())
-                #read_summary_headers = [
-                #    x.replace(" ", "") for x in read_summary_headers
-                #]
-                print(read_summary_headers)
+                
                 for idx, header in enumerate(read_summary_headers):
                     if header in replaced_fields:
                         read_summary_headers[idx] = replaced_fields[header]
-                print(read_summary_headers)
                 break
         for line in summary:
             if re.match("^Total", line) or re.match("^Non-indexed", line):
@@ -67,7 +75,11 @@ def parse_read_summary(summary_path):
                     read_summary_line_dict[header] = float(line[idx])
             else:
                 read_summary_line_dict[header] = float(line[idx])
-        read_summary.append(read_summary_line_dict)
+
+        read_summary_line_dict.pop('Occupancy', None)
+        read_summary_line_dict_ordered = collections.OrderedDict(sorted(read_summary_line_dict.items(), key=lambda x: headers_output_order.index(x[0])))
+
+        read_summary.append(read_summary_line_dict_ordered)
     
     return read_summary
 
@@ -234,10 +246,9 @@ def main(args):
     reads = parse_read_summary(args.summary)
     lanes_by_read = parse_lanes_by_read(args.summary)
 
-    output = {
-        'Reads': reads,
-        'LanesByRead': lanes_by_read,
-    }
+    output = collections.OrderedDict()
+    output['Reads'] = reads
+    output['LanesByRead'] = lanes_by_read
 
     print(json.dumps(output, indent=2))
 

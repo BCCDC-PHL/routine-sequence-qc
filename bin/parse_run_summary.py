@@ -2,6 +2,7 @@
 
 import argparse
 import collections
+import math
 import sys
 import re
 import json
@@ -235,11 +236,17 @@ def parse_lanes_by_read(summary_path):
                     read_line_dict.pop('LegacyPhasingPrephasingRate', None)
                     read_line_dict.pop('Surface', None)
 
+                    for k, v in read_line_dict.items():
+                        if type(v) is float and math.isnan(v):
+                            read_line_dict[k] = 0
+
                     read_line_dict_ordered = collections.OrderedDict(sorted(read_line_dict.items(), key=lambda x: headers_output_order.index(x[0])))
                 
                     lanes_by_read.append(read_line_dict_ordered)
     
     return lanes_by_read
+
+
 
 
 def main(args):

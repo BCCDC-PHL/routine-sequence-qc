@@ -13,6 +13,7 @@ include { bracken } from './modules/bracken.nf'
 include { abundance_top_n } from './modules/bracken.nf'
 include { mash_sketch } from './modules/mash.nf'
 include { mash_sketch_summary } from './modules/mash.nf'
+include { combine_qc_stats } from './modules/combine_qc_stats.nf'
 
 if (params.instrument_type == "miseq") {
   fastq_subdir = "Data/Intensities/BaseCalls"
@@ -58,7 +59,9 @@ workflow {
     ch_fastqc_collected = fastqc.out.map{ it -> [it[1], it[2]] }.collect()
     ch_bracken_species_multiqc_collected = bracken.out.filter{ it[4] == 'Species' }.map{ it -> it[2] }.collect()
     ch_all_qc_outputs = interop_summary.out.map{ it -> it.drop(1) }.combine(ch_fastqc_collected).combine(ch_bracken_species_multiqc_collected)
-    
+
+    combine_qc_stats(abundance_top_n.out.filter{ it[2] == 'Species' }.map{ it -> [it[0], it[1]] }.join(seqtk_fqchk_summary.out.map{ it -> [it[0], it[1]] }).join(mash_sketch_summary.out)).map{ it -> it[1] }.collectFile(keepHeader: true, sort: { it.text }, name: "basic_qc_stats.csv", storeDir: "${params.outdir}/basic_qc_stats")
+
     ch_all_qc_outputs_with_run_id = ch_run_id.combine(ch_all_qc_outputs).map{ it -> [it[0], it.drop(1)] }
     multiqc(ch_multiqc_config.combine(ch_all_qc_outputs_with_run_id))
 }

@@ -7,27 +7,38 @@ import sys
 import re
 import json
 
-def parse_read_summary(summary_path):
-    read_summary_headers = []
-    read_summary_lines = []
 
-    replaced_fields = {
-        '%>=Q30': 'PercentGtQ30',
-        'Projected Yield': 'ProjectedTotalYield',
-        'Yield': 'YieldTotal',
-        'Error Rate': 'ErrorRate',
-        'Aligned': 'PercentAligned',
-        '% Occupied': 'Occupancy',
-        'Level': 'ReadNumber',
-        'Intensity C1': 'IntensityCycle1',
-    }
+def parse_read_summary_line(read_summary_line):
+    parsed_read_summary_line = {}
+
+    read_summary_line = read_summary_line.strip().split(',')
+
+    headers_input_order = [
+        'Level',
+        'YieldTotal',
+        'ProjectedTotalYield',
+        'PercentAligned',
+        'ErrorRate',
+        'IntensityCycle1',
+        'PercentGtQ30',
+        'Occupancy',
+    ]
 
     level_to_read_number = {
         'Read 1': 1,
         'Read 2 (I)': 2,
         'Read 3 (I)': 3,
+        'Read 3': 3,
         'Read 4': 4,
+        'Non-indexed': 'NonIndexed',
+        'Total': 'Total',
     }
+
+    float_fields = [
+        'ErrorRate',
+        'PercentAligned',
+        'Occupancy',
+    ]
 
     headers_output_order = [
         'ReadNumber',
@@ -41,46 +52,44 @@ def parse_read_summary(summary_path):
         'PercentGtQ30',
     ]
 
-    with open(summary_path) as summary:
-        for line in summary:
-            if re.match("^Level", line):
-                read_summary_headers = re.split("\s*,", line.rstrip())
-                
-                for idx, header in enumerate(read_summary_headers):
-                    if header in replaced_fields:
-                        read_summary_headers[idx] = replaced_fields[header]
-                break
-        for line in summary:
-            if re.match("^Total", line) or re.match("^Non-indexed", line):
-                # read_summary_lines.append(re.split(",", line.rstrip()))
-                break
+    for idx, header in enumerate(headers_input_order):
+        if header == 'Level':
+            parsed_read_summary_line['ReadNumber'] = level_to_read_number[read_summary_line[idx]]
+            if re.search("(I)", read_summary_line[idx]):
+                parsed_read_summary_line['IsIndexed'] = True
             else:
-                read_summary_lines.append(re.split(",", line.rstrip()))
+                parsed_read_summary_line['IsIndexed'] = False
+        elif header == 'IntensityC1':
+            parsed_read_summary_line[header] = int(read_summary_line[idx])
+        elif header == 'ErrorRate':
+            if read_summary_line[idx] == 'nan':
+                parsed_read_summary_line[header] = 0
+            else:
+                parsed_read_summary_line[header] = float(read_summary_line[idx])
+        else:
+            parsed_read_summary_line[header] = float(read_summary_line[idx])
 
+        parsed_read_summary_line.pop('Occupancy', None)
+        parsed_read_summary_line_ordered = collections.OrderedDict(sorted(parsed_read_summary_line.items(), key=lambda x: headers_output_order.index(x[0])))
+        
+    return parsed_read_summary_line_ordered
+
+
+def parse_read_summary(summary_path):
     read_summary = []
-    for line in read_summary_lines:
-        read_summary_line_dict = {}
-        for idx, header in enumerate(read_summary_headers):
-            if header == 'ReadNumber':
-                read_summary_line_dict[header] = level_to_read_number[line[idx]]
-                if re.search("(I)", line[idx]):
-                    read_summary_line_dict['IsIndexed'] = True
-                else:
-                    read_summary_line_dict['IsIndexed'] = False
-            elif header == 'IntensityC1':
-                read_summary_line_dict[header] = int(line[idx])
-            elif header == 'ErrorRate':
-                if line[idx] == 'nan':
-                    read_summary_line_dict[header] = 0
-                else:
-                    read_summary_line_dict[header] = float(line[idx])
+
+    with open(summary_path) as f:
+        for line in f:
+            if re.match("^Level", line):
+                break
+        for line in f:
+            if re.match("^Total", line):
+                read_summary_line = parse_read_summary_line(line)
+                read_summary.append(read_summary_line)
+                break
             else:
-                read_summary_line_dict[header] = float(line[idx])
-
-        read_summary_line_dict.pop('Occupancy', None)
-        read_summary_line_dict_ordered = collections.OrderedDict(sorted(read_summary_line_dict.items(), key=lambda x: headers_output_order.index(x[0])))
-
-        read_summary.append(read_summary_line_dict_ordered)
+                read_summary_line = parse_read_summary_line(line)
+                read_summary.append(read_summary_line)
     
     return read_summary
 
@@ -256,17 +265,142 @@ def parse_lanes_by_read(summary_path):
     return lanes_by_read
 
 
+def parse_run_stats(summary_path):
+    run_stats = collections.OrderedDict()
+
+    read_summary_headers = []
+    read_summary_lines = []
+
+    replaced_fields = {
+        '%>=Q30': 'PercentGtQ30',
+        'Projected Yield': 'ProjectedTotalYield',
+        'Yield': 'YieldTotal',
+        'Error Rate': 'ErrorRate',
+        'Aligned': 'PercentAligned',
+        '% Occupied': 'Occupancy',
+        'Level': 'ReadNumber',
+        'Intensity C1': 'IntensityCycle1',
+    }
+
+    level_to_read_number = {
+        'Read 1': 1,
+        'Read 2 (I)': 2,
+        'Read 3 (I)': 3,
+        'Read 3': 3,
+        'Read 4': 4,
+        'Total': 'Total',
+        'Non-Indexed': 'Non-Indexed',
+    }
+
+    headers_output_order = [
+        'ReadNumber',
+        'IsIndexed',
+        'TotalCycles',
+        'YieldTotal',
+        'ProjectedTotalYield',
+        'PercentAligned',
+        'ErrorRate',
+        'IntensityCycle1',
+        'PercentGtQ30',
+    ]
+
+    with open(summary_path) as summary:
+        for line in summary:
+            if re.match("^Level", line):
+                read_summary_headers = re.split("\s*,", line.rstrip())
+                
+                for idx, header in enumerate(read_summary_headers):
+                    if header in replaced_fields:
+                        read_summary_headers[idx] = replaced_fields[header]
+                break
+        for line in summary:
+            if re.match("^Total", line) or re.match("^Non-indexed", line):
+                # read_summary_lines.append(re.split(",", line.rstrip()))
+                break
+            else:
+                read_summary_lines.append(re.split(",", line.rstrip()))
+
+    read_summary = []
+    for line in read_summary_lines:
+        read_summary_line_dict = {}
+        for idx, header in enumerate(read_summary_headers):
+            if header == 'ReadNumber':
+                read_summary_line_dict[header] = level_to_read_number[line[idx]]
+                if re.search("(I)", line[idx]):
+                    read_summary_line_dict['IsIndexed'] = True
+                else:
+                    read_summary_line_dict['IsIndexed'] = False
+            elif header == 'IntensityC1':
+                read_summary_line_dict[header] = int(line[idx])
+            elif header == 'ErrorRate':
+                if line[idx] == 'nan':
+                    read_summary_line_dict[header] = 0
+                else:
+                    read_summary_line_dict[header] = float(line[idx])
+            else:
+                read_summary_line_dict[header] = float(line[idx])
+
+        read_summary_line_dict.pop('Occupancy', None)
+        read_summary_line_dict_ordered = collections.OrderedDict(sorted(read_summary_line_dict.items(), key=lambda x: headers_output_order.index(x[0])))
+
+        read_summary.append(read_summary_line_dict_ordered)
+    
+
+                
+    return run_stats
 
 
 def main(args):
-    reads = parse_read_summary(args.summary)
+    sequencingstats = parse_run_stats(args.summary)
+    read_summary = parse_read_summary(args.summary)
+    reads = [r for r in read_summary if isinstance(r['ReadNumber'], int)]
+
+    for r in [r for r in read_summary if r['ReadNumber'] == 1]:
+        keys = [
+            'ErrorRate',
+            'PercentGtQ30',
+        ]
+        for k in keys:
+            sequencingstats[k + 'R1'] = r[k]
+
+    for r in [r for r in read_summary if r['ReadNumber'] == 4]:
+        keys = [
+            'ErrorRate',
+            'PercentGtQ30',
+        ]
+        for k in keys:
+            sequencingstats[k + 'R2'] = r[k]
+    
+    for r in [r for r in read_summary if r['ReadNumber'] == 'NonIndexed']:
+        keys = [
+            'ErrorRate',
+            'IntensityCycle1',
+            'PercentAligned',
+            'PercentGtQ30',
+            'ProjectedTotalYield',
+            'YieldTotal',
+        ]
+        for k in keys:
+            sequencingstats['NonIndexed' + k] = r[k]
+
+    for r in [r for r in read_summary if r['ReadNumber'] == 'Total']:
+        keys = [
+            'ErrorRate',
+            'IntensityCycle1',
+            'PercentAligned',
+            'PercentGtQ30',
+            'ProjectedTotalYield',
+            'YieldTotal',
+        ]
+        for k in keys:
+            sequencingstats[k] = r[k]
+        
     lanes_by_read = parse_lanes_by_read(args.summary)
 
-    output = collections.OrderedDict()
-    output['Reads'] = reads
-    output['LanesByRead'] = lanes_by_read
+    sequencingstats['Reads'] = reads
+    sequencingstats['LanesByRead'] = lanes_by_read
 
-    print(json.dumps(output, indent=2))
+    print(json.dumps(sequencingstats, indent=2))
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()

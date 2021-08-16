@@ -23,6 +23,6 @@ process interop_summary {
       """
       interop_summary ${run_dir} --csv=1 > interop_summary.csv
       interop_index-summary ${run_dir} --csv=1 > interop_index-summary.csv
-      # parse_run_summary.py --summary interop_summary.txt | python -m json.tool > interop_summary.json
+      parse_run_summary.py --summary interop_summary.csv > interop_summary.json
       """
 }

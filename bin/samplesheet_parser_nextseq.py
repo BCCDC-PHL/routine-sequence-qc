@@ -16,6 +16,8 @@ def camel_to_snake(name):
 def parse_header_section(path_to_sample_sheet):
   header_lines = []
   header = {}
+  header['instrument_type'] = 'NextSeq2000'
+
   with open(path_to_sample_sheet, 'r') as f:
       for line in f:
           if line.strip().startswith('[Header]'):

@@ -91,12 +91,13 @@ def parse_data_section(path_to_sample_sheet):
       data_header = [x.lower() for x in next(f).strip().split(',')]
       
       for line in f:
+        if not all([x == '' for x in line.strip().split(',')]):
           data_line = {}
           for idx, data_element in enumerate(line.strip().split(',')):
-              try:
-                data_line[data_header[idx]] = data_element
-              except IndexError as e:
-                  pass
+            try:
+              data_line[data_header[idx]] = data_element
+            except IndexError as e:
+              pass
           data.append(data_line)
 
   return data
@@ -112,7 +113,7 @@ def main(args):
   sample_sheet['reads'] = reads
   sample_sheet['data'] = data
 
-  print(json.dumps(sample_sheet))
+  print(json.dumps(sample_sheet, indent=2))
   
   
 

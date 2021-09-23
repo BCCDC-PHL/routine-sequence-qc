@@ -5,22 +5,15 @@ process mash_sketch {
     publishDir "${params.outdir}/${task.process.replaceAll(":","_")}", pattern: "${output_basename}_mash_sketch.txt", mode: 'copy'
 
     input:
-      tuple val(grouping_key), path(reads)
+      tuple val(sample_id), path(reads_1), path(reads_2)
 
     output:
       tuple val(sample_id), path ("${output_basename}_mash_sketch.txt")
 
     script:
-      if (grouping_key =~ '_S[0-9]+_') {
-        sample_id = grouping_key.split("_S[0-9]+_")[0]
-      } else if (grouping_key =~ '_') {
-        sample_id = grouping_key.split("_")[0]
-      } else {
-        sample_id = grouping_key
-      }
-      output_basename = reads[0].baseName.split('\\.')[0]
+      output_basename = reads_1.baseName.split('\\.')[0]
       """
-      mash sketch -r ${reads[0]} -m ${params.mash_sketch_minimum_copies} -k ${params.mash_sketch_kmer_size} -C ${output_basename} -o ${output_basename} &> ${output_basename}_mash_sketch.txt
+      mash sketch -r ${reads_1} -m ${params.mash_sketch_minimum_copies} -k ${params.mash_sketch_kmer_size} -C ${output_basename} -o ${output_basename} &> ${output_basename}_mash_sketch.txt
       """
 }
 

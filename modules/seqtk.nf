@@ -7,25 +7,18 @@ process seqtk_fqchk {
     cpus 1
 
     input:
-      tuple val(grouping_key), path(reads)
+      tuple val(sample_id), path(reads_1), path(reads_2)
 
     output:
       tuple val(sample_id), path("${sample_id}_seqtk_fqchk_all_positions.csv"), path("${sample_id}_seqtk_fqchk_by_position.csv")
 
     script:
-      if (grouping_key =~ '_S[0-9]+_') {
-        sample_id = grouping_key.split("_S[0-9]+_")[0]
-      } else if (grouping_key =~ '_') {
-        sample_id = grouping_key.split("_")[0]
-      } else {
-        sample_id = grouping_key
-      }
       """
       echo 'filename,position,num_bases,percent_a,percent_c,percent_g,percent_t,percent_n,average_q,error_q,percent_bases_below_q${params.seqtk_fqchk_threshold},percent_bases_above_q${params.seqtk_fqchk_threshold}' > header.csv
-      seqtk fqchk -q ${params.seqtk_fqchk_threshold} ${reads[0]} | tr \$'\\t' ',' | tail -n+3 | awk -F ',' 'BEGIN {OFS=FS}; {print "${reads[0]}", \$0}' > ${sample_id}_R1_seqtk_fqchk_data.csv
+      seqtk fqchk -q ${params.seqtk_fqchk_threshold} ${reads_1} | tr \$'\\t' ',' | tail -n+3 | awk -F ',' 'BEGIN {OFS=FS}; {print "${reads_1}", \$0}' > ${sample_id}_R1_seqtk_fqchk_data.csv
       grep 'ALL' ${sample_id}_R1_seqtk_fqchk_data.csv > ${sample_id}_R1_seqtk_fqchk_data_all_positions.csv
       grep -v 'ALL' ${sample_id}_R1_seqtk_fqchk_data.csv > ${sample_id}_R1_seqtk_fqchk_data_by_position.csv
-      seqtk fqchk -q ${params.seqtk_fqchk_threshold} ${reads[1]} | tr \$'\\t' ',' | tail -n+3 | awk -F ',' 'BEGIN {OFS=FS}; {print "${reads[1]}", \$0}' > ${sample_id}_R2_seqtk_fqchk_data.csv
+      seqtk fqchk -q ${params.seqtk_fqchk_threshold} ${reads_2} | tr \$'\\t' ',' | tail -n+3 | awk -F ',' 'BEGIN {OFS=FS}; {print "${reads_2}", \$0}' > ${sample_id}_R2_seqtk_fqchk_data.csv
       grep 'ALL' ${sample_id}_R2_seqtk_fqchk_data.csv > ${sample_id}_R2_seqtk_fqchk_data_all_positions.csv
       grep -v 'ALL' ${sample_id}_R2_seqtk_fqchk_data.csv > ${sample_id}_R2_seqtk_fqchk_data_by_position.csv
       cat header.csv ${sample_id}_R1_seqtk_fqchk_data_all_positions.csv ${sample_id}_R2_seqtk_fqchk_data_all_positions.csv > ${sample_id}_seqtk_fqchk_all_positions.csv

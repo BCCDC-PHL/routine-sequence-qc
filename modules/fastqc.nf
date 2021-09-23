@@ -12,21 +12,14 @@ process fastqc {
     cpus 2
 
     input:
-      tuple val(grouping_key), path(reads)
+      tuple val(sample_id), path(reads_1), path(reads_2)
 
     output:
       tuple val(sample_id), path("${sample_id}_R1_fastqc"), path("${sample_id}_R2_fastqc")
 
     script:
-      if (grouping_key =~ '_S[0-9]+_') {
-        sample_id = grouping_key.split("_S[0-9]+_")[0]
-      } else if (grouping_key =~ '_') {
-        sample_id = grouping_key.split("_")[0]
-      } else {
-        sample_id = grouping_key
-      }
       """
-      fastqc -t 2 ${reads}
+      fastqc -t 2 ${reads_1} ${reads_2}
       for d in *.zip; do unzip \$d; done
       if [ ! -d "${sample_id}_R1_fastqc" ]
       then

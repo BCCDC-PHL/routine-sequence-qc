@@ -182,13 +182,14 @@ def parse_cloud_data_section(path_to_sample_sheet):
     cloud_data_keys = [camel_to_snake(x) for x in cloud_data_lines[0].split(',')]
     for line in cloud_data_lines[1:]:
       d = {}
-      values = line.split(',')
-      for idx, key in enumerate(cloud_data_keys):
-        try:
-          d[key] = values[idx]
-        except IndexError as e:
-          d[key] = ""
-        cloud_data.append(d)
+      values = line.strip().split(',')
+      if not all([x == '' for x in values]):
+        for idx, key in enumerate(cloud_data_keys):
+          try:
+            d[key] = values[idx]
+          except IndexError as e:
+            d[key] = ""
+          cloud_data.append(d)
   
   return cloud_data
 
@@ -212,7 +213,7 @@ def main(args):
   if cloud_data:
     sample_sheet['cloud_data'] = cloud_data
 
-  print(json.dumps(sample_sheet))
+  print(json.dumps(sample_sheet, indent=2))
   
   
 

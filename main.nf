@@ -43,7 +43,7 @@ workflow {
     mash_sketch_summary(mash_sketch.out).map{ it -> it[1] }.collectFile(keepHeader: true, sort: { it.text }, name: "mash_sketch_summary.csv", storeDir: "${params.outdir}/mash_sketch_summary")
 
     kraken2(ch_fastq.combine(ch_kraken2_db))
-    bracken(kraken2.out.combine(ch_bracken_db).combine(parse_sample_sheet.out).combine(ch_taxonomic_levels))
+    bracken(kraken2.out.combine(ch_bracken_db).combine(parse_sample_sheet.out).combine(ch_taxonomic_levels).unique{ it -> [it[0], it[4]] })
 
     abundance_top_n(bracken.out)
 

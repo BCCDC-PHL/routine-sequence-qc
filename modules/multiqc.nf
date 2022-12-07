@@ -5,9 +5,9 @@ process multiqc {
     * @output tuple path(multiqc_report), path(multiqc_data)
     */
 
+    errorStrategy 'finish'
+
     tag { run_id }
-    
-    validExitStatus 0,1
 
     publishDir "${params.outdir}/${task.process.replaceAll(":","_")}", pattern: "multiqc_*", mode: 'copy'
     publishDir "${params.outdir}", pattern: "pipeline_complete.json", mode: 'copy'

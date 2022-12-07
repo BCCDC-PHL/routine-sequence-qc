@@ -2,18 +2,18 @@
 
 nextflow.enable.dsl = 2
 
-include { fastqc } from './modules/fastqc.nf'
-include { seqtk_fqchk } from './modules/seqtk.nf'
+include { fastqc }              from './modules/fastqc.nf'
+include { seqtk_fqchk }         from './modules/seqtk.nf'
 include { seqtk_fqchk_summary } from './modules/seqtk.nf'
-include { multiqc } from './modules/multiqc.nf'
-include { interop_summary } from './modules/interop.nf'
-include { parse_sample_sheet } from './modules/sample-sheet.nf'
-include { kraken2 } from './modules/kraken2.nf'
-include { bracken } from './modules/bracken.nf'
-include { abundance_top_n } from './modules/bracken.nf'
-include { mash_sketch } from './modules/mash.nf'
+include { multiqc }             from './modules/multiqc.nf'
+include { interop_summary }     from './modules/interop.nf'
+include { parse_sample_sheet }  from './modules/sample-sheet.nf'
+include { kraken2 }             from './modules/kraken2.nf'
+include { bracken }             from './modules/bracken.nf'
+include { abundance_top_n }     from './modules/bracken.nf'
+include { mash_sketch }         from './modules/mash.nf'
 include { mash_sketch_summary } from './modules/mash.nf'
-include { combine_qc_stats } from './modules/combine_qc_stats.nf'
+include { combine_qc_stats }    from './modules/combine_qc_stats.nf'
 
 
 

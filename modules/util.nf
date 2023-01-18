@@ -21,8 +21,6 @@ def getFastqSubdir(instrument_type) {
 	    }
             def timestamp_dir = timestamp_dirs.last()
             fastq_subdir = '/' + alignment_dir.name + '/' + timestamp_dir + '/Fastq'
-	    println(fastq_subdir)
-	    System.exit(0)
         } else {
             fastq_subdir = "/Data/Intensities/BaseCalls"
         }

@@ -56,8 +56,9 @@ process abundance_top_n {
       tuple val(sample_id), path("${sample_id}_${taxonomic_level}_top_*.tsv"), val(taxonomic_level)
 
     script:
-    def top_n = taxonomic_level == 'Genus' ? '3' : '5'
+    top_n = taxonomic_level == 'Genus' ? '3' : '5'
+    taxonomic_level_char = taxonomic_level.substring(0,1)
     """
-    bracken_top_n_linelist.py ${bracken_abundances} -n ${top_n} -s ${sample_id} > ${sample_id}_${taxonomic_level}_top_${top_n}.tsv
+    bracken_top_n_linelist.py ${bracken_abundances} -n ${top_n} -s ${sample_id} -l ${taxonomic_level_char} > ${sample_id}_${taxonomic_level}_top_${top_n}.tsv
     """
 }

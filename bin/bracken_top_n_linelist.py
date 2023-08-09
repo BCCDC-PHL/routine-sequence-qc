@@ -12,6 +12,10 @@ def parse_bracken_report(bracken_report_path):
     with open(bracken_report_path, 'r') as f:
         reader = csv.DictReader(f, dialect='excel-tab')
         for row in reader:
+            try:
+                row['fraction_total_reads'] = float(row['fraction_total_reads'])
+            except ValueError as e:
+                row['fraction_total_reads'] = None
             bracken_report_lines.append(row)
 
     return bracken_report_lines
@@ -25,7 +29,7 @@ def main(args):
     output_fields = ['sample_id', 'taxonomy_level']
     output_line = {
         'sample_id': args.sample_id,
-        'taxonomy_level': bracken_report_sorted[0]['taxonomy_lvl']
+        'taxonomy_level': args.taxonomy_level,
     }
     
     for n in range(args.top_n):
@@ -34,18 +38,25 @@ def main(args):
         try:
             output_line[name_field] = bracken_report_sorted[n]['name']
         except IndexError as e:
-            output_line[name_field] = "None"
+            output_line[name_field] = None
         output_fields.append(name_field)
+
+        taxid_field = 'abundance_' + num + '_taxonomy_id'
+        try:
+            output_line[taxid_field] = bracken_report_sorted[n]['taxonomy_id']
+        except IndexError as e:
+            output_line[taxid_field] = None
+        output_fields.append(taxid_field)
+
         fraction_total_reads_field = 'abundance_' + num + '_fraction_total_reads'
         try:
-            output_line[fraction_total_reads_field] = bracken_report_sorted[n]['fraction_total_reads']
+            output_line[fraction_total_reads_field] = round(bracken_report_sorted[n]['fraction_total_reads'], 6)
         except IndexError as e:
             output_line[fraction_total_reads_field] = 0.0
         output_fields.append(fraction_total_reads_field)
         
 
-    csv.register_dialect('unix-csv-quote-minimal', delimiter=',', doublequote=False, lineterminator='\n', quoting=csv.QUOTE_MINIMAL)
-    writer = csv.DictWriter(sys.stdout, fieldnames=output_fields, dialect='unix-csv-quote-minimal')
+    writer = csv.DictWriter(sys.stdout, fieldnames=output_fields, dialect='unix', quoting=csv.QUOTE_MINIMAL)
     writer.writeheader()
     writer.writerow(output_line)
         
@@ -53,6 +64,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('bracken_report')
     parser.add_argument('-s', '--sample-id')
+    parser.add_argument('-l', '--taxonomy-level')
     parser.add_argument('-n', '--top-n', type=int)
     args = parser.parse_args()
     main(args)

@@ -42,9 +42,13 @@ nextflow run BCCDC-PHL/routine-sequence-qc \
 │   └── basic_qc_stats.csv
 ├── bracken
 │   ├── <sample_id>_Genus_bracken_abundances.tsv
+│   ├── <sample_id>_Genus_bracken_abundances_adjusted.tsv
 │   ├── <sample_id>_Genus_bracken.txt
+│   ├── <sample_id>_Genus_bracken_adjusted.txt
 │   ├── <sample_id>_Species_bracken_abundances.tsv
+│   ├── <sample_id>_Species_bracken_abundances_adjusted.tsv
 │   ├── <sample_id>_Species_bracken.txt
+│   ├── <sample_id>_Species_bracken_adjusted.txt
 │   ├── ...
 ├── fastqc
 │   ├── <sample_id>_R1_fastqc

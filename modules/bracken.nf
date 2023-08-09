@@ -12,14 +12,11 @@ process bracken {
       tuple val(sample_id), path(kraken2_report), path(bracken_db), path(sample_sheet_json), val(taxonomic_level)
 
     output:
-      tuple val(sample_id), path("${sample_id}_${taxonomic_level}_bracken.txt"), path("${sample_id}_${taxonomic_level}_multiqc_bracken.txt"), path("${sample_id}_${taxonomic_level}_bracken_abundances.tsv"), val(taxonomic_level)
+      tuple val(sample_id), path("${sample_id}_${taxonomic_level}_bracken.txt"), path("${sample_id}_${taxonomic_level}_bracken_abundances.tsv"), val(taxonomic_level), emit: unadjusted
+      tuple val(sample_id), path("${sample_id}_${taxonomic_level}_bracken_adjusted.txt"), path("${sample_id}_${taxonomic_level}_bracken_abundances_adjusted.tsv"), val(taxonomic_level), emit: adjusted
 
     script:
     taxonomic_level_char = taxonomic_level.substring(0,1)
-    // MultiQC uses the following regex on the first two lines of a file to identify it as a kraken output:
-    // '^\s{1,2}(\d{1,2}\.\d{1,2})\t(\d+)\t(\d+)\t([\dUDKPCOFGS-]{1,3})\t(\d+)\s+(.+)'
-    // The output is modified slightly to mimic kraken2 output so that it can be parsed by MultiQC.
-    // The original outputs are stored to the output dir, and the modified ones are sent to MultiQC.
     """
     bracken -d ${bracken_db} \
       -i ${kraken2_report} \
@@ -27,14 +24,20 @@ process bracken {
       -o ${sample_id}_${taxonomic_level}_bracken_abundances_unsorted.tsv \
       -r \$(get_read_length.py ${sample_sheet_json}) \
       -l ${taxonomic_level_char}
+
     head -n 1 ${sample_id}_${taxonomic_level}_bracken_abundances_unsorted.tsv > bracken_abundances_header.tsv
     tail -n+2 ${sample_id}_${taxonomic_level}_bracken_abundances_unsorted.tsv | sort -t \$'\\t' -nrk 7,7 > ${sample_id}_${taxonomic_level}_bracken_abundances_data.tsv
     cat bracken_abundances_header.tsv ${sample_id}_${taxonomic_level}_bracken_abundances_data.tsv > ${sample_id}_${taxonomic_level}_bracken_abundances.tsv
-    sed 's/100\\.00/99\\.99/' ${sample_id}_${taxonomic_level}_bracken.txt | awk 'NR != 2' | awk '{print " ", \$0}' > ${sample_id}_${taxonomic_level}_bracken_tmp.txt
-    echo -e "  0.01\\t1\\t1\\tU\\t1\\tunclassified" > unclassified_placeholder.tsv
-    cat unclassified_placeholder.tsv ${sample_id}_${taxonomic_level}_bracken_tmp.txt > ${sample_id}_${taxonomic_level}_multiqc_bracken.txt
+
+    adjust_for_unclassified_reads.py \
+      --kraken-report ${kraken2_report} \
+      --bracken-report ${sample_id}_${taxonomic_level}_bracken.txt \
+      --bracken-abundances ${sample_id}_${taxonomic_level}_bracken_abundances.tsv \
+      --adjusted-report ${sample_id}_${taxonomic_level}_bracken_adjusted.txt \
+      --adjusted-abundances ${sample_id}_${taxonomic_level}_bracken_abundances_adjusted.tsv
     """
 }
+
 
 process abundance_top_n {
 
@@ -47,7 +50,7 @@ process abundance_top_n {
     cpus 1
 
     input:
-      tuple val(sample_id), path(_), path(_2), path(bracken_abundances), val(taxonomic_level)
+      tuple val(sample_id), path(_), path(bracken_abundances), val(taxonomic_level)
 
     output:
       tuple val(sample_id), path("${sample_id}_${taxonomic_level}_top_*.tsv"), val(taxonomic_level)

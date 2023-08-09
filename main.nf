@@ -47,13 +47,13 @@ workflow {
     kraken2(ch_fastq.combine(ch_kraken2_db))
     bracken(kraken2.out.combine(ch_bracken_db).combine(parse_sample_sheet.out).combine(ch_taxonomic_levels).unique{ it -> [it[0], it[4]] })
 
-    abundance_top_n(bracken.out)
+    abundance_top_n(bracken.out.adjusted)
 
     abundance_top_n.out.filter{ it[2] == 'Genus' }.map{ it -> it[1] }.collectFile(keepHeader: true, sort: { it.text }, name: "top_3_abundances_genus.csv", storeDir: "${params.outdir}/abundance_top_n")
     abundance_top_n.out.filter{ it[2] == 'Species' }.map{ it -> it[1] }.collectFile(keepHeader: true, sort: { it.text }, name: "top_5_abundances_species.csv", storeDir: "${params.outdir}/abundance_top_n")
     
     ch_fastqc_collected = fastqc.out.map{ it -> [it[1], it[2]] }.collect()
-    ch_bracken_species_multiqc_collected = bracken.out.filter{ it[4] == 'Species' }.map{ it -> it[2] }.collect()
+    ch_bracken_species_multiqc_collected = bracken.out.adjusted.filter{ it[3] == 'Species' }.map{ it -> it[1] }.collect()
     ch_all_qc_outputs = interop_summary.out.map{ it -> it.drop(1) }.combine(ch_fastqc_collected).combine(ch_bracken_species_multiqc_collected)
 
     combine_qc_stats(abundance_top_n.out.filter{ it[2] == 'Species' }.map{ it -> [it[0], it[1]] }.join(seqtk_fqchk_summary.out.map{ it -> [it[0], it[1]] }).join(mash_sketch_summary.out)).map{ it -> it[1] }.collectFile(keepHeader: true, sort: { it.text }, name: "basic_qc_stats.csv", storeDir: "${params.outdir}/basic_qc_stats")

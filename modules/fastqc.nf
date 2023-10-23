@@ -18,16 +18,21 @@ process fastqc {
       tuple val(sample_id), path("${sample_id}_R1_fastqc"), path("${sample_id}_R2_fastqc")
 
     script:
-      """
-      fastqc -t 2 ${reads_1} ${reads_2}
-      for d in *.zip; do unzip \$d; done
-      if [ ! -d "${sample_id}_R1_fastqc" ]
-      then
-        mv ${sample_id}*_R1*_fastqc ${sample_id}_R1_fastqc
-      fi
-      if [ ! -d "${sample_id}_R2_fastqc" ]
-      then
-        mv ${sample_id}*_R2*_fastqc ${sample_id}_R2_fastqc
-      fi
-      """
+    """
+    mkdir -p ./tmp
+    
+    fastqc \
+	-t ${task.cpus} \
+	--dir ./tmp \
+	${reads_1} \
+	${reads_2}
+
+    for d in *.zip; do unzip \$d; done
+    if [ ! -d "${sample_id}_R1_fastqc" ]; then
+      mv ${sample_id}*_R1*_fastqc ${sample_id}_R1_fastqc
+    fi
+    if [ ! -d "${sample_id}_R2_fastqc" ]; then
+      mv ${sample_id}*_R2*_fastqc ${sample_id}_R2_fastqc
+    fi
+    """
 }

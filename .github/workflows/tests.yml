@@ -1,16 +1,30 @@
 on:
   pull_request:
     branches:
-    - main
-name: Pull Request
+      - main
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+name: Tests
 jobs:
   test:
+    strategy:
+      fail-fast: false
+      matrix:
+        nextflow_version: ["21.04.3", "23.10.1"]
     name: Run tests
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@master
+    - uses: actions/checkout@v4
     - name: create artifacts dir to save test logs
       run: mkdir artifacts
+    - name: Setup Java
+      uses: actions/setup-java@v4
+      with:
+        java-version: '11'
+        distribution: 'temurin'
+        architecture: x64
     - name: Cache Miniconda Installation
       id: cache-miniconda
       uses: pat-s/always-upload-cache@v2.1.3
@@ -80,6 +94,8 @@ jobs:
       run: bash .github/scripts/install_conda.sh
     - name: Install Nextflow
       if: steps.cache-nextflow.outputs.cache-hit != 'true'
+      env:
+        NXF_VER: ${{ matrix.nextflow_version }}
       run: bash .github/scripts/install_nextflow.sh
     - name: Install ncbi-acc-download
       if: steps.cache-miniconda.outputs.cache-hit != 'true'

@@ -13,6 +13,4 @@ echo "export PATH=/opt/nextflow/bin:$PATH" >> ~/.bashrc
 
 export PATH=/opt/nextflow/bin:$PATH
 
-nextflow -C .github/config/nextflow.config run hello
-
 mv nextflow_install.out nextflow_install.err artifacts

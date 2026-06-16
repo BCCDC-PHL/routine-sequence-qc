@@ -189,7 +189,7 @@ def parse_cloud_data_section(path_to_sample_sheet):
             d[key] = values[idx]
           except IndexError as e:
             d[key] = ""
-          cloud_data.append(d)
+        cloud_data.append(d)
   
   return cloud_data
 

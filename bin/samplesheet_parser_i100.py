@@ -16,7 +16,7 @@ def camel_to_snake(name):
 def parse_header_section(path_to_sample_sheet):
   header_lines = []
   header = {}
-  header['instrument_type'] = 'NextSeq2000'
+  header['instrument_type'] = 'MiSeqi100Series'
 
   with open(path_to_sample_sheet, 'r') as f:
       for line in f:
@@ -162,7 +162,7 @@ def parse_cloud_settings_section(path_to_sample_sheet):
 
     if cloud_settings_key != "":
       cloud_settings[cloud_settings_key] = cloud_settings_value
-              
+
   return cloud_settings
 
 
@@ -189,7 +189,7 @@ def parse_cloud_data_section(path_to_sample_sheet):
             d[key] = values[idx]
           except IndexError as e:
             d[key] = ""
-          cloud_data.append(d)
+        cloud_data.append(d)
   
   return cloud_data
 

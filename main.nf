@@ -3,6 +3,7 @@
 nextflow.enable.dsl = 2
 
 include { makeFastqSearchPath } from './modules/util.nf'
+include { findSampleSheet }     from './modules/util.nf'
 include { fastqc }              from './modules/fastqc.nf'
 include { seqtk_fqchk }         from './modules/seqtk.nf'
 include { seqtk_fqchk_summary } from './modules/seqtk.nf'
@@ -22,7 +23,7 @@ workflow {
   fastq_search_path = makeFastqSearchPath(params.illumina_suffixes, params.fastq_exts, params.instrument_type)
   ch_fastq = Channel.fromFilePairs(fastq_search_path, flat: true).map{ it -> [it[0].split('_')[0], it[1], it[2]] }.unique{ it -> it[0] }
   ch_kraken2_db = Channel.fromPath(params.kraken2_db)
-  ch_sample_sheet = Channel.fromPath( "${params.run_dir}/SampleSheet*.csv" )
+  ch_sample_sheet = Channel.fromPath(findSampleSheet(params.instrument_type))
   ch_multiqc_config = Channel.fromPath( "${projectDir}/assets/multiqc_config_base.yaml" )
   ch_run_dir = Channel.fromPath(params.run_dir)
   ch_run_id = Channel.fromPath(params.run_dir).map{ it -> it.baseName }

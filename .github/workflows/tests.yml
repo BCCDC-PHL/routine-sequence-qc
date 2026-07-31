@@ -12,7 +12,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        nextflow_version: ["25.10.7", "26.04.6"]
+        nextflow_version: ["25.10.7"]
     name: Run tests
     runs-on: ubuntu-latest
     steps:

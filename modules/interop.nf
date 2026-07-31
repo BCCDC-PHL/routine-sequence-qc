@@ -1,9 +1,4 @@
 process interop_summary {
-    /**
-    * 
-    * @input tuple val(run_id), path(run_dir)
-    * @output path(interop_summary_json)
-    */
 
     tag { run_id }
 

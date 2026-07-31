@@ -1,9 +1,4 @@
 process parse_sample_sheet {
-    /**
-    * 
-    * @input tuple val(run_id), path(sample_sheet_csv)
-    * @output path(sample_sheet_json)
-    */
 
     tag { run_id }
 

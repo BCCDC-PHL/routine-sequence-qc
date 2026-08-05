@@ -6,7 +6,7 @@ export PATH=/opt/miniconda3/bin:$PATH
 
 pushd ${PWD}/.github/data/kraken2_db/taxonomy
 
-rsync --no-motd rsync://ftp.ncbi.nlm.nih.gov/pub/taxonomy/taxdump.tar.gz .
+wget https://ftp.ncbi.nlm.nih.gov/pub/taxonomy/taxdump.tar.gz
 
 tar -xzf taxdump.tar.gz && rm taxdump.tar.gz
 

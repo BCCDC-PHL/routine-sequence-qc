@@ -4,7 +4,7 @@ process kraken2 {
 
     errorStrategy 'ignore'
 
-    publishDir "${params.outdir}/${task.process.replaceAll(":","_")}", pattern: "${meta.id}_kraken2.txt", mode: 'copy'
+    publishDir "${params.outdir}/kraken2", pattern: "${meta.id}_kraken2.txt", mode: 'copy'
 
 
     input:

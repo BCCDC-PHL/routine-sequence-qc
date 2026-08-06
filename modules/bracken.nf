@@ -4,16 +4,16 @@ process bracken {
 
     errorStrategy 'ignore'
 
-    publishDir "${params.outdir}/${task.process.replaceAll(":","_")}", pattern: "${meta.id}_${taxonomic_level}_bracken*", mode: 'copy'
+    publishDir "${params.outdir}/bracken", pattern: "${meta.id}_${taxonomic_level}_bracken*", mode: 'copy'
 
     cpus 2
 
     input:
-      tuple val(meta), path(kraken2_report), path(bracken_db), path(sample_sheet_json), val(taxonomic_level)
+    tuple val(meta), path(kraken2_report), path(bracken_db), path(sample_sheet_json), val(taxonomic_level)
 
     output:
-      tuple val(meta), path("${meta.id}_${taxonomic_level}_bracken.txt"), path("${meta.id}_${taxonomic_level}_bracken_abundances.tsv"), val(taxonomic_level), emit: unadjusted
-      tuple val(meta), path("${meta.id}_${taxonomic_level}_bracken_adjusted.txt"), path("${meta.id}_${taxonomic_level}_bracken_abundances_adjusted.tsv"), val(taxonomic_level), emit: adjusted
+    tuple val(meta), path("${meta.id}_${taxonomic_level}_bracken.txt"), path("${meta.id}_${taxonomic_level}_bracken_abundances.tsv"), val(taxonomic_level), emit: unadjusted
+    tuple val(meta), path("${meta.id}_${taxonomic_level}_bracken_adjusted.txt"), path("${meta.id}_${taxonomic_level}_bracken_abundances_adjusted.tsv"), val(taxonomic_level), emit: adjusted
 
     script:
     taxonomic_level_char = taxonomic_level.substring(0,1)
@@ -50,10 +50,10 @@ process abundance_top_n {
     cpus 1
 
     input:
-      tuple val(meta), path(_), path(bracken_abundances), val(taxonomic_level)
+    tuple val(meta), path(_), path(bracken_abundances), val(taxonomic_level)
 
     output:
-      tuple val(meta), path("${meta.id}_${taxonomic_level}_top_*.tsv"), val(taxonomic_level)
+    tuple val(meta), path("${meta.id}_${taxonomic_level}_top_*.tsv"), val(taxonomic_level)
 
     script:
     top_n = taxonomic_level == 'Genus' ? '3' : '5'

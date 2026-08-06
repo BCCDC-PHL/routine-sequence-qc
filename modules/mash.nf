@@ -4,7 +4,7 @@ process mash_sketch {
 
     errorStrategy 'ignore'
 
-    publishDir "${params.outdir}/${task.process.replaceAll(":","_")}", pattern: "${output_basename}_mash_sketch.txt", mode: 'copy'
+    publishDir "${params.outdir}/mash_sketch", pattern: "${output_basename}_mash_sketch.txt", mode: 'copy'
 
     input:
     tuple val(meta), path(reads_1), path(reads_2)

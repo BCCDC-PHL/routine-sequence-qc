@@ -2,15 +2,15 @@ process fastqc {
 
     tag { meta.id }
 
-    publishDir "${params.outdir}/${task.process.replaceAll(":","_")}", pattern: "${meta.id}_*_fastqc", mode: 'copy'
+    publishDir "${params.outdir}/fastqc", pattern: "${meta.id}_*_fastqc", mode: 'copy'
 
     cpus 2
 
     input:
-      tuple val(meta), path(reads_1), path(reads_2)
+    tuple val(meta), path(reads_1), path(reads_2)
 
     output:
-      tuple val(meta), path("${meta.id}_R1_fastqc"), path("${meta.id}_R2_fastqc")
+    tuple val(meta), path("${meta.id}_R1_fastqc"), path("${meta.id}_R2_fastqc")
 
     script:
     """

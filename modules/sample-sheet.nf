@@ -2,17 +2,17 @@ process parse_sample_sheet {
 
     tag { run_id }
 
-    publishDir "${params.outdir}/${task.process.replaceAll(":","_")}", pattern: "sample_sheet.json", mode: 'copy'
+    publishDir "${params.outdir}/parse_sample_sheet", pattern: "sample_sheet.json", mode: 'copy'
 
     executor 'local'
 
     cpus 1
 
     input:
-      tuple val(run_id), path(sample_sheet)
+    tuple val(run_id), path(sample_sheet)
 
     output:
-      path("sample_sheet.json")
+    path("sample_sheet.json")
 
     script:
     def parser_script = "samplesheet_parser_nextseq.py"

@@ -5,10 +5,10 @@ process combine_qc_stats {
   executor 'local'
 
   input:
-    tuple val(meta), path(species_abundance), path(sequence_quality), path(estimated_coverage)
+  tuple val(meta), path(species_abundance), path(sequence_quality), path(estimated_coverage)
 
   output:
-    tuple val(meta), path("${meta.id}_combined_qc_stats.csv")
+  tuple val(meta), path("${meta.id}_combined_qc_stats.csv")
 
   script:
   """

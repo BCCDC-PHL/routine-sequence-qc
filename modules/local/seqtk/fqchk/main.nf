@@ -2,9 +2,10 @@ process seqtk_fqchk {
 
     tag { meta.id }
 
-    publishDir "${params.outdir}/seqtk_fqchk", pattern: "${meta.id}_seqtk_fqchk*_position*.csv", mode: 'copy'
-
     cpus 1
+    conda "${moduleDir}/environment.yml"
+
+    publishDir "${params.outdir}/seqtk_fqchk", pattern: "${meta.id}_seqtk_fqchk*_position*.csv", mode: 'copy'
 
     input:
     tuple val(meta), path(reads_1), path(reads_2)
@@ -26,22 +27,3 @@ process seqtk_fqchk {
     """
 }
 
-process seqtk_fqchk_summary {
-
-    tag { meta.id }
-
-    cpus 1
-
-    executor 'local'
-
-    input:
-    tuple val(meta), path(seqtk_fqchk_output_all_positions), path(seqtk_fqchk_output_by_position)
-
-    output:
-    tuple val(meta), path("${meta.id}_seqtk_fqchk_summary.csv")
-
-    script:
-    """
-    summarize_seqtk_fqchk.py ${seqtk_fqchk_output_all_positions} --sample-id ${meta.id} > ${meta.id}_seqtk_fqchk_summary.csv
-    """
-}

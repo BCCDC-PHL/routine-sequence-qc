@@ -1,19 +1,20 @@
 #!/usr/bin/env nextflow
 
-include { makeFastqSearchPath } from '../modules/util.nf'
-include { findSampleSheet }     from '../modules/util.nf'
-include { fastqc }              from '../modules/fastqc.nf'
-include { seqtk_fqchk }         from '../modules/seqtk.nf'
-include { seqtk_fqchk_summary } from '../modules/seqtk.nf'
-include { multiqc }             from '../modules/multiqc.nf'
-include { interop_summary }     from '../modules/interop.nf'
-include { parse_sample_sheet }  from '../modules/sample-sheet.nf'
-include { kraken2 }             from '../modules/kraken2.nf'
-include { bracken }             from '../modules/bracken.nf'
-include { abundance_top_n }     from '../modules/bracken.nf'
-include { mash_sketch }         from '../modules/mash.nf'
-include { mash_sketch_summary } from '../modules/mash.nf'
-include { combine_qc_stats }    from '../modules/combine_qc_stats.nf'
+include { makeFastqSearchPath }   from '../modules/local/utils_routine_sequence_qc_pipeline'
+include { findSampleSheet }       from '../modules/local/utils_routine_sequence_qc_pipeline'
+include { fastqc }                from '../modules/local/fastqc'
+include { seqtk_fqchk }           from '../modules/local/seqtk/fqchk'
+include { seqtk_fqchk_summary }   from '../modules/local/seqtk/fqchk_summary'
+include { multiqc }               from '../modules/local/multiqc'
+include { interop_summary }       from '../modules/local/interop/summary'
+include { parse_interop_summary } from '../modules/local/parse_interop_summary'
+include { parse_sample_sheet }    from '../modules/local/parse_sample_sheet'
+include { kraken2 }               from '../modules/local/kraken2'
+include { bracken }               from '../modules/local/bracken'
+include { abundance_top_n }       from '../modules/local/abundance_top_n'
+include { mash_sketch }           from '../modules/local/mash/sketch'
+include { mash_sketch_summary }   from '../modules/local/mash/sketch_summary'
+include { combine_qc_stats }      from '../modules/local/combine_qc_stats'
 
 workflow ROUTINE_SEQUENCE_QC {
 
@@ -35,6 +36,7 @@ workflow ROUTINE_SEQUENCE_QC {
     main:
     
     interop_summary(ch_run_id.combine(ch_run_dir))
+    parse_interop_summary(interop_summary.out.map{ it -> [it[0], it[1]]})
 
     parse_sample_sheet(ch_run_id.combine(ch_sample_sheet))
 

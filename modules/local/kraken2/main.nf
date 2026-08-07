@@ -2,10 +2,9 @@ process kraken2 {
 
     tag { meta.id }
 
-    errorStrategy 'ignore'
+    conda "${moduleDir}/environment.yml"
 
     publishDir "${params.outdir}/kraken2", pattern: "${meta.id}_kraken2.txt", mode: 'copy'
-
 
     input:
     tuple val(meta), path(reads_1), path(reads_2), path(kraken2_db)

@@ -2,11 +2,11 @@ process parse_sample_sheet {
 
     tag { run_id }
 
-    publishDir "${params.outdir}/parse_sample_sheet", pattern: "sample_sheet.json", mode: 'copy'
-
-    executor 'local'
-
     cpus 1
+    executor 'local'
+    conda "${moduleDir}/environment.yml"
+
+    publishDir "${params.outdir}/parse_sample_sheet", pattern: "sample_sheet.json", mode: 'copy'
 
     input:
     tuple val(run_id), path(sample_sheet)

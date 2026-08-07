@@ -1,8 +1,9 @@
 process multiqc {
 
-    errorStrategy 'finish'
-
     tag { run_id }
+
+    errorStrategy 'finish'
+    conda "${moduleDir}/environment.yml"
 
     publishDir "${params.outdir}/multiqc", pattern: "multiqc_*", mode: 'copy'
     publishDir "${params.outdir}", pattern: "pipeline_complete.json", mode: 'copy'

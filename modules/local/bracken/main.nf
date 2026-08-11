@@ -2,11 +2,11 @@ process bracken {
 
     tag { meta.id + " / " + taxonomic_level }
 
+    cpus 2
     errorStrategy 'ignore'
+    conda "${moduleDir}/environment.yml"
 
     publishDir "${params.outdir}/bracken", pattern: "${meta.id}_${taxonomic_level}_bracken*", mode: 'copy'
-
-    cpus 2
 
     input:
     tuple val(meta), path(kraken2_report), path(bracken_db), path(sample_sheet_json), val(taxonomic_level)
@@ -35,30 +35,5 @@ process bracken {
       --bracken-abundances ${meta.id}_${taxonomic_level}_bracken_abundances.tsv \
       --adjusted-report ${meta.id}_${taxonomic_level}_bracken_adjusted.txt \
       --adjusted-abundances ${meta.id}_${taxonomic_level}_bracken_abundances_adjusted.tsv
-    """
-}
-
-
-process abundance_top_n {
-
-    tag { meta.id + " / " + taxonomic_level }
-
-    errorStrategy 'ignore'
-
-    executor 'local'
-
-    cpus 1
-
-    input:
-    tuple val(meta), path(_), path(bracken_abundances), val(taxonomic_level)
-
-    output:
-    tuple val(meta), path("${meta.id}_${taxonomic_level}_top_*.tsv"), val(taxonomic_level)
-
-    script:
-    top_n = taxonomic_level == 'Genus' ? '3' : '5'
-    taxonomic_level_char = taxonomic_level.substring(0,1)
-    """
-    bracken_top_n_linelist.py ${bracken_abundances} -n ${top_n} -s ${meta.id} -l ${taxonomic_level_char} > ${meta.id}_${taxonomic_level}_top_${top_n}.tsv
     """
 }

@@ -2,9 +2,10 @@ process fastqc {
 
     tag { meta.id }
 
-    publishDir "${params.outdir}/fastqc", pattern: "${meta.id}_*_fastqc", mode: 'copy'
-
     cpus 2
+    conda "${moduleDir}/environment.yml"
+
+    publishDir "${params.outdir}/fastqc", pattern: "${meta.id}_*_fastqc", mode: 'copy'
 
     input:
     tuple val(meta), path(reads_1), path(reads_2)
